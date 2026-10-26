@@ -1,0 +1,445 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#1a1f38">
+  <title>个人网站</title>
+  <style>
+    @font-face {
+      font-family: "Renju Display";
+      src: url("assets/Renju.woff2") format("woff2");
+      font-display: swap;
+    }
+    :root {
+      --night: #1a1f38;
+      --night-deep: #11162d;
+      --paper: #fffdf5;
+      --pink: #ffb5a7;
+      --pink-hot: #ff8fa3;
+      --line: rgba(255, 253, 245, .22);
+    }
+    * { box-sizing: border-box; }
+    html {
+      background: var(--night);
+      color-scheme: dark;
+      scrollbar-width: none;
+      -ms-overflow-style: none;
+    }
+    ::-webkit-scrollbar {
+      width: 0;
+      height: 0;
+      display: none;
+    }
+    body {
+      min-width: 320px;
+      min-height: 100svh;
+      margin: 0;
+      overflow-x: clip;
+      background: var(--night);
+      color: var(--paper);
+      font-family: "PingFang SC", "Microsoft YaHei", sans-serif;
+    }
+    ::selection { background: var(--pink); color: var(--night); }
+    a:focus-visible { outline: 3px solid var(--pink-hot); outline-offset: 5px; }
+    .brand, .back-button { position: fixed; z-index: 100; }
+    .brand {
+      top: clamp(24px, 3.4vw, 44px);
+      left: clamp(20px, 3.5vw, 54px);
+      color: var(--pink);
+      font-family: "Renju Display", Georgia, serif;
+      font-size: clamp(1.75rem, 2.5vw, 2.8rem);
+      line-height: .8;
+      letter-spacing: .015em;
+      text-decoration: none;
+    }
+    .back-button {
+      top: clamp(20px, 3.1vw, 40px);
+      right: clamp(20px, 3.5vw, 54px);
+      display: grid;
+      width: 52px;
+      aspect-ratio: 1;
+      place-items: center;
+      border-radius: 50%;
+      background: var(--paper);
+      color: var(--night);
+      text-decoration: none;
+      transition: transform 220ms ease-out, background-color 220ms ease-out;
+    }
+    .back-button::before, .back-button::after {
+      position: absolute;
+      width: 15px;
+      height: 2px;
+      content: "";
+      background: currentColor;
+    }
+    .back-button::before { transform: rotate(45deg); }
+    .back-button::after { transform: rotate(-45deg); }
+    .back-button:is(:hover, :focus-visible) { transform: scale(.9) rotate(4deg); background: var(--pink); }
+    .card-slot[hidden] { display: none; }
+    .gallery-categories { position: fixed; z-index: 100; top: 100px; left: clamp(20px, 3.5vw, 54px); display: flex; flex-direction: column; align-items: flex-start; gap: 8px; background: transparent; padding: 0; }
+    .gallery-categories button { position: relative; display: flex; align-items: center; gap: 8px; min-height: 48px; padding: 8px 0; border: 0; background: none; color: var(--paper); font: inherit; font-size: 14px; cursor: pointer; white-space: nowrap; }
+    .gallery-categories small { font-size: 11px; font-variant-numeric: tabular-nums; }
+    .gallery-categories button::after { content: ''; position: absolute; bottom: 0; left: 0; right: 0; height: 2px; background: var(--pink); transform: scaleX(0); transition: transform 180ms ease-out; }
+    .gallery-categories button[aria-pressed="true"] { color: var(--pink); }
+    .gallery-categories button[aria-pressed="true"]::after { transform: scaleX(1); }
+    .gallery-categories button:hover { color: var(--pink); }
+    .gallery-categories button:focus-visible { outline: 2px solid var(--pink); outline-offset: 5px; }
+    @media(max-width:640px) { .gallery-categories { top: 86px; gap: 8px; } .gallery-categories button { font-size: 13px; } }
+    .gallery-scroll {
+      position: relative;
+      min-height: 100svh;
+      overflow-x: clip;
+      background: var(--night);
+    }
+    .sticky-stage {
+      position: sticky;
+      top: 0;
+      display: flex;
+      height: 100svh;
+      align-items: center;
+      overflow: hidden;
+      perspective: 1000px;
+    }
+    .stage-title {
+      position: absolute;
+      z-index: 1;
+      inset: 50% auto auto 50%;
+      width: min(92vw, 1100px);
+      margin: 0;
+      color: rgba(255, 181, 167, .75);
+      font-family: "Renju Display", Georgia, serif;
+      font-size: clamp(5rem, 16vw, 14rem);
+      font-weight: 400;
+      line-height: .72;
+      letter-spacing: .01em;
+      text-align: center;
+      transform: translate(-50%, -50%);
+      user-select: none;
+    }
+    .track {
+      position: relative;
+      z-index: 2;
+      display: flex;
+      height: 100%;
+      align-items: center;
+      gap: 5vw;
+      padding-inline: 31vw;
+      transform-style: preserve-3d;
+      will-change: transform;
+    }
+    .card-slot {
+      position: relative;
+      display: flex;
+      flex: 0 0 auto;
+      align-items: center;
+      justify-content: center;
+      width: auto;
+      height: 45vh;
+      min-height: 280px;
+      aspect-ratio: 4 / 3;
+      transform-style: preserve-3d;
+    }
+    .card-slot.is-portrait {
+      height: 62vh;
+      min-height: 320px;
+      aspect-ratio: 3 / 4;
+    }
+    .card-slot.is-wide {
+      height: 36vh;
+      min-height: 240px;
+      aspect-ratio: 2.08;
+    }
+    .rotation-card {
+      position: absolute;
+      inset: 0;
+      overflow: hidden;
+      background: var(--night);
+      box-shadow: 0 28px 70px rgba(5, 8, 22, .5);
+      transform-origin: right center;
+      transform-style: preserve-3d;
+      will-change: transform;
+    }
+    .card-media {
+      position: absolute;
+      inset: 0;
+      display: grid;
+      place-items: center;
+      overflow: hidden;
+      background: var(--card-bg, #1a1f38);
+    }
+    .rotation-card img {
+      width: 100%;
+      height: 100%;
+      object-fit: contain;
+      /* The card owns the composited transform; images need no extra layer. */
+    }
+    .rotation-card.is-cover img { object-fit: contain; }
+    .card-media::after {
+      position: absolute;
+      inset: 0;
+      content: "";
+      background: none;
+      pointer-events: none;
+    }
+    .card-caption {
+      position: absolute;
+      z-index: 3;
+      left: 50%;
+      bottom: clamp(18px, 2.4vw, 34px);
+      width: calc(100% - 40px);
+      margin: 0;
+      color: var(--paper);
+      font-family: "Renju Display", "PingFang SC", sans-serif;
+      font-size: clamp(1.25rem, 2vw, 2.25rem);
+      line-height: .95;
+      letter-spacing: .02em;
+      text-align: center;
+      text-shadow: 0 4px 20px rgba(0, 0, 0, .55);
+      transform: translateX(-50%) translateZ(20px);
+    }
+    .card-number {
+      position: absolute;
+      z-index: 3;
+      top: 18px;
+      left: 20px;
+      color: var(--paper);
+      font-family: "Renju Display", sans-serif;
+      font-size: 1rem;
+      text-shadow: 0 2px 8px rgba(0, 0, 0, .5);
+    }
+    .tear-band {
+      display: block;
+      width: 100%;
+      height: auto;
+      margin: 0 0 -2px;
+      padding: 0;
+      position: relative;
+      z-index: 3;
+    }
+    .gallery-end {
+      display: grid;
+      min-height: 100svh;
+      place-items: center;
+      padding: 96px 24px;
+      background: var(--paper);
+      color: var(--night);
+      text-align: center;
+    }
+    .gallery-end h2 {
+      max-width: 8ch;
+      margin: 0;
+      font-family: "Renju Display", Georgia, serif;
+      font-size: clamp(3.5rem, 9vw, 6rem);
+      font-weight: 400;
+      line-height: .82;
+      letter-spacing: .01em;
+    }
+    .gallery-end a {
+      display: inline-block;
+      margin-top: 32px;
+      color: var(--night);
+      font-size: .85rem;
+      font-weight: 800;
+      letter-spacing: .12em;
+      text-underline-offset: 6px;
+    }
+    @media (max-width: 1025px) {
+      .track { gap: 8vw; padding-inline: 22vw; }
+      .card-slot { height: 40vh; }
+      .card-slot.is-portrait { height: 56vh; }
+    }
+    @media (max-width: 640px) {
+      .brand { font-size: 1.8rem; }
+      .back-button { width: 46px; }
+      .track { gap: 12vw; padding-left: 12vw; padding-right: 12.5vw; }
+      .card-slot { width: 80vw; height: auto; aspect-ratio: 4 / 3; min-height: 0; }
+      .card-slot.is-portrait { width: 64vw; height: auto; aspect-ratio: 3 / 4; }
+      .card-slot.is-natural { width: 64vw; }
+      .card-slot.is-wide { width: 82vw; height: auto; aspect-ratio: 2.08; }
+      .stage-title { font-size: 24vw; }
+      .card-caption { font-size: clamp(1.2rem, 6vw, 1.8rem); }
+    }
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after {
+        scroll-behavior: auto !important;
+        animation-duration: .001ms !important;
+        transition-duration: .001ms !important;
+      }
+      .sticky-stage { perspective: 4800px; }
+    }
+  </style>
+<link rel="stylesheet" href="assets/scene-transition.css">
+<script src="assets/scene-transition.js" defer></script>
+</head>
+<body>
+  <!--
+    THESIS: OREKI's design archive becomes a physical reel of memories instead of a conventional list.
+    OWN-WORLD: Deep navy stage, paper-white fields, soft pink lettering, full-bleed photographic cards.
+    STORY: Scroll vertically to pan a horizontal sequence; each design fragment arrives, settles, then folds away.
+    FIRST VIEWPORT: An edge-to-edge pinned 3D track occupies the screen, with OREKI at top-left and the exit at top-right.
+    FORM: User-pinned Cards Rotate Slider adaptation; supplied component is the governing reference.
+    FINISH: unreviewed and undocumented is unfinished; this build ends with the finish review, the verdict, DESIGN.md, and every shipping raster carrying its provenance
+  -->
+  <a class="brand" href="index.html#home" aria-label="返回首页" data-scene-link>OREKI</a>
+  <a class="back-button" href="index.html#home" aria-label="关闭画廊并返回首页" data-scene-link></a>
+  <nav class="gallery-categories" aria-label="照片分类">
+    <button type="button" data-filter="daily" aria-pressed="true">日常碎片 <small>17</small></button>
+    <button type="button" data-filter="artists" aria-pressed="false">演员 / IDOL <small>09</small></button>
+  </nav>
+  <main>
+    <section class="gallery-scroll" aria-label="OREKI 旋转照片画廊">
+      <div class="sticky-stage">
+        <h1 class="stage-title" aria-hidden="true">OREKI<br>ARCHIVE</h1>
+        <div class="track">
+          <article class="card-slot" data-category="daily"><div class="rotation-card" style="--card-bg:#1a1f38"><div class="card-media"><img src="assets/gallery/photo-01-1600.webp" alt="漂流活动合影" decoding="async" fetchpriority="high" width="1707" height="1280" srcset="assets/gallery/photo-01-800.webp 800w, assets/gallery/photo-01-1600.webp 1600w" sizes="(max-width: 640px) 80vw, 60vh" loading="eager"></div><span class="card-number">01</span><p class="card-caption">SUMMER DRIFT</p></div></article>
+          <article class="card-slot is-portrait" data-category="daily"><div class="rotation-card" style="--card-bg:#1a1f38"><div class="card-media"><img src="assets/gallery/photo-02-1600.webp" alt="餐桌朋友合影" decoding="async" width="1280" height="1707" srcset="assets/gallery/photo-02-800.webp 600w, assets/gallery/photo-02-1600.webp 1200w" sizes="(max-width: 640px) 64vw, 46.5vh" loading="eager"></div><span class="card-number">02</span><p class="card-caption">TABLE FOR FIVE</p></div></article>
+          <article class="card-slot is-portrait" data-category="daily"><div class="rotation-card" style="--card-bg:#1a1f38"><div class="card-media"><img src="assets/gallery/photo-03-1600.webp" alt="街头镜面自拍" decoding="async" width="1645" height="2193" srcset="assets/gallery/photo-03-800.webp 600w, assets/gallery/photo-03-1600.webp 1200w" sizes="(max-width: 640px) 64vw, 46.5vh" loading="eager"></div><span class="card-number">03</span><p class="card-caption">STREET MIRROR</p></div></article>
+          <article class="card-slot is-wide" data-category="daily"><div class="rotation-card" style="--card-bg:#1a1f38"><div class="card-media"><img src="assets/gallery/photo-04-1600.webp" alt="音乐现场蓝色舞台" decoding="async" width="2007" height="964" srcset="assets/gallery/photo-04-800.webp 800w, assets/gallery/photo-04-1600.webp 1600w" sizes="(max-width: 640px) 80vw, 60vh" loading="eager"></div><span class="card-number">04</span><p class="card-caption">BLUE STAGE</p></div></article>
+          <article class="card-slot" data-category="daily"><div class="rotation-card" style="--card-bg:#1a1f38"><div class="card-media"><img src="assets/gallery/photo-05-1600.webp" alt="雏菊饮品特写" decoding="async" width="4096" height="3072" srcset="assets/gallery/photo-05-800.webp 800w, assets/gallery/photo-05-1600.webp 1600w" sizes="(max-width: 640px) 80vw, 60vh" loading="eager"></div><span class="card-number">05</span><p class="card-caption">FLOWER IN A GLASS</p></div></article>
+          <article class="card-slot is-portrait" data-category="daily"><div class="rotation-card" style="--card-bg:#1a1f38"><div class="card-media"><img src="assets/gallery/photo-06-1600.webp" alt="朋友手持拍立得合影" decoding="async" width="3072" height="4096" srcset="assets/gallery/photo-06-800.webp 600w, assets/gallery/photo-06-1600.webp 1200w" sizes="(max-width: 640px) 64vw, 46.5vh" loading="eager"></div><span class="card-number">06</span><p class="card-caption">FOUR FRAMES</p></div></article>
+          <article class="card-slot" data-category="daily"><div class="rotation-card" style="--card-bg:#1a1f38"><div class="card-media"><img src="assets/gallery/photo-07-1600.webp" alt="黄昏行车窗外风景" decoding="async" width="4096" height="3072" srcset="assets/gallery/photo-07-800.webp 800w, assets/gallery/photo-07-1600.webp 1600w" sizes="(max-width: 640px) 80vw, 60vh" loading="eager"></div><span class="card-number">07</span><p class="card-caption">MOVING SUNSET</p></div></article>
+          <article class="card-slot" data-category="daily"><div class="rotation-card" style="--card-bg:#1a1f38"><div class="card-media"><img src="assets/gallery/photo-08-1600.webp" alt="心形留言布景" decoding="async" width="4096" height="3072" srcset="assets/gallery/photo-08-800.webp 800w, assets/gallery/photo-08-1600.webp 1600w" sizes="(max-width: 640px) 80vw, 60vh" loading="eager"></div><span class="card-number">08</span><p class="card-caption">FIRST MEETING</p></div></article>
+          <article class="card-slot" data-category="daily"><div class="rotation-card" style="--card-bg:#1a1f38"><div class="card-media"><img src="assets/gallery/photo-09-1600.webp" alt="夜间音乐节红色烟雾" decoding="async" width="4096" height="3072" srcset="assets/gallery/photo-09-800.webp 800w, assets/gallery/photo-09-1600.webp 1600w" sizes="(max-width: 640px) 80vw, 60vh" loading="eager"></div><span class="card-number">09</span><p class="card-caption">RED NIGHT</p></div></article>
+          <article class="card-slot" data-category="daily"><div class="rotation-card" style="--card-bg:#1a1f38"><div class="card-media"><img src="assets/gallery/photo-10-1600.webp" alt="城市街道日落" decoding="async" width="4096" height="3072" srcset="assets/gallery/photo-10-800.webp 800w, assets/gallery/photo-10-1600.webp 1600w" sizes="(max-width: 640px) 80vw, 60vh" loading="eager"></div><span class="card-number">10</span><p class="card-caption">CITY SUNSET</p></div></article>
+          <article class="card-slot" data-category="daily"><div class="rotation-card" style="--card-bg:#1a1f38"><div class="card-media"><img src="assets/gallery/photo-11-1600.webp" alt="海湾蓝天风景" decoding="async" width="4096" height="3072" srcset="assets/gallery/photo-11-800.webp 800w, assets/gallery/photo-11-1600.webp 1600w" sizes="(max-width: 640px) 80vw, 60vh" loading="eager"></div><span class="card-number">11</span><p class="card-caption">BLUE HORIZON</p></div></article>
+          <article class="card-slot" data-category="daily"><div class="rotation-card" style="--card-bg:#1a1f38"><div class="card-media"><img src="assets/gallery/photo-12-1600.webp" alt="拉面餐食特写" decoding="async" width="4096" height="3072" srcset="assets/gallery/photo-12-800.webp 800w, assets/gallery/photo-12-1600.webp 1600w" sizes="(max-width: 640px) 80vw, 60vh" loading="eager"></div><span class="card-number">12</span><p class="card-caption">LATE DINNER</p></div></article>
+          <article class="card-slot" data-category="daily"><div class="rotation-card" style="--card-bg:#1a1f38"><div class="card-media"><img src="assets/gallery/photo-13-1600.webp" alt="阴天下的海湾" decoding="async" width="4096" height="3072" srcset="assets/gallery/photo-13-800.webp 800w, assets/gallery/photo-13-1600.webp 1600w" sizes="(max-width: 640px) 80vw, 60vh" loading="eager"></div><span class="card-number">13</span><p class="card-caption">GREY COAST</p></div></article>
+          <article class="card-slot is-portrait" data-category="daily"><div class="rotation-card" style="--card-bg:#1a1f38"><div class="card-media"><img src="assets/gallery/photo-14-1600.webp" alt="手持粽子与点赞手势" decoding="async" width="3072" height="4096" srcset="assets/gallery/photo-14-800.webp 600w, assets/gallery/photo-14-1600.webp 1200w" sizes="(max-width: 640px) 64vw, 46.5vh" loading="eager"></div><span class="card-number">14</span><p class="card-caption">TAVERN MEMORIES</p></div></article>
+          <article class="card-slot is-portrait" data-category="daily"><div class="rotation-card" style="--card-bg:#1a1f38"><div class="card-media"><img src="assets/gallery/photo-15-1600.webp" alt="房间朋友合影" decoding="async" width="960" height="1280" srcset="assets/gallery/photo-15-800.webp 600w, assets/gallery/photo-15-1600.webp 960w" sizes="(max-width: 640px) 64vw, 46.5vh" loading="eager"></div><span class="card-number">15</span><p class="card-caption">ROOM MEMORY</p></div></article>
+          <article class="card-slot" data-category="daily"><div class="rotation-card" style="--card-bg:#1a1f38"><div class="card-media"><img src="assets/gallery/photo-16-1600.webp" alt="冬日户外两人合影" decoding="async" width="5184" height="3888" srcset="assets/gallery/photo-16-800.webp 800w, assets/gallery/photo-16-1600.webp 1600w" sizes="(max-width: 640px) 80vw, 60vh" loading="eager"></div><span class="card-number">16</span><p class="card-caption">WINTER TOGETHER</p></div></article>
+          <article class="card-slot is-portrait" data-category="daily"><div class="rotation-card" style="--card-bg:#1a1f38"><div class="card-media"><img src="assets/gallery/photo-17-1600.webp" alt="三人合影的拍立得照片" decoding="async" width="2992" height="4000" srcset="assets/gallery/photo-17-800.webp 598w, assets/gallery/photo-17-1600.webp 1197w" sizes="(max-width: 640px) 64vw, 46.5vh" loading="eager"></div><span class="card-number">17</span><p class="card-caption">YOUTH MEMORIES</p></div></article>
+<article class="card-slot is-portrait" data-category="artists" hidden><div class="rotation-card" style="--card-bg:#1a1f38"><div class="card-media"><img src="assets/gallery/artist-01-1600.webp" alt="演员与偶像图片收藏 1" decoding="async" width="1200" height="1600" srcset="assets/gallery/artist-01-800.webp 600w, assets/gallery/artist-01-1600.webp 1200w" sizes="(max-width: 640px) 64vw, 46.5vh" loading="lazy"></div><span class="card-number">01</span><p class="card-caption">kang hyewon</p></div></article>
+<article class="card-slot is-portrait" data-category="artists" hidden><div class="rotation-card" style="--card-bg:#1a1f38"><div class="card-media"><img src="assets/gallery/artist-02-1600.webp" alt="演员与偶像图片收藏 2" decoding="async" width="1200" height="1600" srcset="assets/gallery/artist-02-800.webp 600w, assets/gallery/artist-02-1600.webp 1200w" sizes="(max-width: 640px) 64vw, 46.5vh" loading="lazy"></div><span class="card-number">02</span><p class="card-caption">chung su bin</p></div></article>
+<article class="card-slot is-natural" style="aspect-ratio:1179 / 1244" data-category="artists" hidden><div class="rotation-card" style="--card-bg:#1a1f38"><div class="card-media"><img src="assets/gallery/artist-03-1600.webp" alt="演员与偶像图片收藏 3" decoding="async" width="1179" height="1244" srcset="assets/gallery/artist-03-800.webp 758w, assets/gallery/artist-03-1600.webp 1179w" sizes="(max-width: 640px) 64vw, 43vh" loading="lazy"></div><span class="card-number">03</span><p class="card-caption">hiyori sakurada</p></div></article>
+<article class="card-slot is-portrait" data-category="artists" hidden><div class="rotation-card" style="--card-bg:#1a1f38"><div class="card-media"><img src="assets/gallery/artist-04-1600.webp" alt="演员与偶像图片收藏 4" decoding="async" width="1200" height="1600" srcset="assets/gallery/artist-04-800.webp 600w, assets/gallery/artist-04-1600.webp 1200w" sizes="(max-width: 640px) 64vw, 46.5vh" loading="lazy"></div><span class="card-number">04</span><p class="card-caption">JIWOO</p></div></article>
+<article class="card-slot is-portrait" data-category="artists" hidden><div class="rotation-card" style="--card-bg:#1a1f38"><div class="card-media"><img src="assets/gallery/artist-05-1600.webp" alt="演员与偶像图片收藏 5" decoding="async" width="1200" height="1601" srcset="assets/gallery/artist-05-800.webp 600w, assets/gallery/artist-05-1600.webp 1200w" sizes="(max-width: 640px) 64vw, 46.5vh" loading="lazy"></div><span class="card-number">05</span><p class="card-caption">WONI</p></div></article>
+<article class="card-slot is-portrait" data-category="artists" hidden><div class="rotation-card" style="--card-bg:#1a1f38"><div class="card-media"><img src="assets/gallery/artist-06-1600.webp" alt="演员与偶像图片收藏 6" decoding="async" width="1200" height="1600" srcset="assets/gallery/artist-06-800.webp 600w, assets/gallery/artist-06-1600.webp 1200w" sizes="(max-width: 640px) 64vw, 46.5vh" loading="lazy"></div><span class="card-number">06</span><p class="card-caption">KARINA</p></div></article>
+<article class="card-slot is-portrait" data-category="artists" hidden><div class="rotation-card" style="--card-bg:#1a1f38"><div class="card-media"><img src="assets/gallery/artist-07-1600.webp" alt="演员与偶像图片收藏 7" decoding="async" width="1200" height="1584" srcset="assets/gallery/artist-07-800.webp 600w, assets/gallery/artist-07-1600.webp 1200w" sizes="(max-width: 640px) 64vw, 46.5vh" loading="lazy"></div><span class="card-number">07</span><p class="card-caption">su1023</p></div></article>
+<article class="card-slot is-natural" style="aspect-ratio:4 / 5" data-category="artists" hidden><div class="rotation-card" style="--card-bg:#1a1f38"><div class="card-media"><img src="assets/gallery/artist-08-1600.webp" alt="演员与偶像图片收藏 8" decoding="async" width="1200" height="1500" srcset="assets/gallery/artist-08-800.webp 600w, assets/gallery/artist-08-1600.webp 1200w" sizes="(max-width: 640px) 64vw, 46.5vh" loading="lazy"></div><span class="card-number">08</span><p class="card-caption">GOYOUNJUNG</p></div></article>
+<article class="card-slot is-portrait" data-category="artists" hidden><div class="rotation-card" style="--card-bg:#1a1f38"><div class="card-media"><img src="assets/gallery/artist-09-1600.webp" alt="演员与偶像图片收藏 9" decoding="async" width="1080" height="1440" srcset="assets/gallery/artist-09-800.webp 600w, assets/gallery/artist-09-1600.webp 1080w" sizes="(max-width: 640px) 64vw, 46.5vh" loading="lazy"></div><span class="card-number">09</span><p class="card-caption">IMWINTER</p></div></article>
+        </div>
+      </div>
+    </section>
+    <img class="tear-band" src="assets/torn-edge-horizontal.webp" alt="" draggable="false" aria-hidden="true">
+    <section class="gallery-end">
+      <div><h2>MAKE THE ORDINARY MATTER</h2><a href="index.html#home" data-scene-link>返回 OREKI 首页</a></div>
+    </section>
+  </main>
+
+  <script src="assets/vendor/gsap.min.js"></script>
+  <script src="assets/vendor/ScrollTrigger.min.js"></script>
+  <script>
+    (() => {
+      const outer = document.querySelector('.gallery-scroll');
+      const stage = document.querySelector('.sticky-stage');
+      const track = document.querySelector('.track');
+      const allSlots = [...document.querySelectorAll('.card-slot')];
+      let slots = allSlots.filter(slot => !slot.hidden);
+      let cards = slots.map(slot => slot.querySelector('.rotation-card'));
+      const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+      if (!outer || !track || !cards.length) return;
+
+      // Slot orientations and image dimensions are fixed in the markup.
+      const breakpointValues = () => {
+        const width = window.innerWidth;
+        if (width < 640) return { step: 2, rotateIn: -60, rotateOut: 50 };
+        if (width < 1025) return { step: 6, rotateIn: -80, rotateOut: 65 };
+        return { step: 10, rotateIn: -100, rotateOut: 80 };
+      };
+      const updateHeight = () => {
+        const travel = Math.max(0, track.scrollWidth - window.innerWidth);
+        outer.style.height = `${travel + window.innerHeight}px`;
+      };
+      const fallback = () => {
+        cards.forEach((card) => { card.style.opacity = '1'; card.style.transform = 'none'; });
+        outer.style.height = '100svh';
+        if (stage) stage.style.overflowX = 'auto';
+      };
+      if (!window.gsap || !window.ScrollTrigger) { fallback(); return; }
+
+      gsap.registerPlugin(ScrollTrigger);
+      ScrollTrigger.addEventListener('refreshInit', updateHeight);
+      updateHeight();
+
+      let context;
+      const buildGallery = () => {
+      context = gsap.context(() => {
+        const horizontalTween = gsap.to(track, {
+          x: () => -(track.scrollWidth - window.innerWidth),
+          ease: 'none',
+          scrollTrigger: {
+            trigger: outer,
+            start: 'top top',
+            end: () => `+=${track.scrollWidth - window.innerWidth}`,
+            scrub: reducedMotion ? true : .45,
+            invalidateOnRefresh: true
+          }
+        });
+
+        cards.forEach((card, index) => {
+          const middle = Math.floor(cards.length / 2);
+          const values = breakpointValues();
+          const offset = index < middle ? -((middle - index) * values.step * 1.2) : (index - middle + 1) * values.step * 1.2;
+          const rotationScale = reducedMotion ? .15 : 1;
+          const rotateX = (offset < 0 ? 5 : -5) * rotationScale;
+          const timeline = gsap.timeline({
+            scrollTrigger: {
+              trigger: slots[index],
+              containerAnimation: horizontalTween,
+              start: 'left 100%',
+              end: 'right 0%',
+              scrub: true
+            }
+          });
+          timeline.fromTo(card, {
+            rotateY: values.rotateIn * 1.1 * rotationScale,
+            rotateX,
+            opacity: 1,
+            y: `${offset}vh`
+          }, {
+            rotateY: 0,
+            rotateX: 0,
+            opacity: 1,
+            y: 0,
+            ease: 'none'
+          }).to(card, {
+            rotateY: values.rotateOut * 1.1 * rotationScale,
+            opacity: 1,
+            y: `${-offset}vh`,
+            ease: 'none'
+          });
+        });
+      }, outer);
+      };
+      buildGallery();
+      document.querySelectorAll('[data-filter]').forEach(button => {
+        button.addEventListener('click', () => {
+          if (button.getAttribute('aria-pressed') === 'true') return;
+          context.revert();
+          allSlots.forEach(slot => { slot.hidden = slot.dataset.category !== button.dataset.filter; });
+          slots = allSlots.filter(slot => !slot.hidden);
+          cards = slots.map(slot => slot.querySelector('.rotation-card'));
+          slots.forEach(slot => { slot.querySelector('img').loading = 'eager'; });
+          document.querySelectorAll('[data-filter]').forEach(item => item.setAttribute('aria-pressed', String(item === button)));
+          window.scrollTo(0, 0);
+          updateHeight();
+          buildGallery();
+          ScrollTrigger.refresh();
+        });
+      });
+
+      window.addEventListener('pagehide', (event) => {
+        if(event.persisted) return;
+        ScrollTrigger.removeEventListener('refreshInit', updateHeight);
+        context.revert();
+      });
+      window.addEventListener('pageshow', (event) => {if(event.persisted) ScrollTrigger.refresh();});
+      window.scrollTo(0, 0);
+      ScrollTrigger.refresh();
+    })();
+  </script>
+<script src="assets/cursor-icon-trail.js" defer></script>
+<script src="assets/mobile-browser-notice.js" defer></script>
+</body>
+</html>

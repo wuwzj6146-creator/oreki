@@ -1,0 +1,2316 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#1a1f38">
+  <meta name="description" content="OREKI 的个人作品集，展示 UI、UX、视觉与产品设计作品，以及日常照片。">
+  <title>个人网站</title>
+
+  <link rel="preload" as="image" href="assets/face-happy-fitted.webp">
+  <link rel="preload" as="image" href="assets/face-lively-fitted.webp">
+  <link rel="preload" as="image" href="assets/face-surprised-fitted.webp">
+  <link rel="preload" as="image" href="assets/face-angry-fitted.webp">
+
+  <!--
+    IMAGE CHECKLIST
+    Place these files beside this HTML in an /assets folder:
+    assets/face-happy-fitted.webp      aligned happy portrait (master silhouette)
+    assets/face-lively-fitted.webp     aligned lively portrait
+    assets/face-surprised-fitted.webp  aligned surprised portrait
+    assets/face-angry-fitted.webp      aligned angry portrait
+    assets/camera.webp             transparent sticker object
+    assets/book.webp               transparent sticker object
+  assets/cloud.webp              transparent cloud sticker object
+  assets/paper-crease.webp       white folded-paper texture for hover labels
+    assets/daisy.webp              transparent flower sticker object
+    assets/heart.webp              transparent sticker object
+    assets/wind-leaves.webp        transparent atmospheric object
+    assets/latest-thumbnail.webp   lower-left card image
+
+    All expression portraits must share the same canvas, hair, outer contour and
+    sticker stroke. The master image supplies the upper head; the aligned variants
+    are stacked inside the complementary lower-face crop.
+  -->
+
+  <style>
+    @font-face {
+      font-family: "Die Grotesk";
+      src: url("assets/fonts/die-grotesk-c-bold.woff2") format("woff2");
+      font-weight: 700;
+      font-display: swap;
+    }
+    @font-face {
+      font-family: "Die Grotesk";
+      src: url("assets/fonts/die-grotesk-c-regular.woff2") format("woff2");
+      font-weight: 400;
+      font-display: swap;
+    }
+    @font-face {
+      font-family: "Renju Display";
+      src: url("assets/Renju.woff2") format("woff2");
+      font-weight: 400;
+      font-style: normal;
+      font-display: swap;
+    }
+
+    :root {
+      --night: #1a1f38;
+      --night-deep: #12172d;
+      --pink: #ffb5a7;
+      --paper: #fffdf5;
+      --ink: #151a31;
+      --line: #46517b;
+      --hero-w: min(60.8vw, 902.5px);
+      --brain-scale: .9684;
+      --avatar-ratio: 0.857142;
+    }
+
+    * { box-sizing: border-box; }
+    html { scroll-behavior: auto; background: var(--night); }
+    body {
+      margin: 0;
+      min-width: 320px;
+      overflow-x: hidden;
+      color: var(--paper);
+      background: var(--night);
+      font-family: "Die Grotesk", "Arial Narrow", Arial, sans-serif;
+      -webkit-font-smoothing: antialiased;
+    }
+    body.menu-open { overflow: hidden; }
+    button, a { font: inherit; }
+    button { border: 0; }
+    a { color: inherit; }
+    img { display: block; max-width: 100%; }
+    ::selection { color: var(--night); background: var(--pink); }
+    :focus-visible { outline: 3px solid var(--pink); outline-offset: 4px; }
+
+    .sr-only {
+      position: absolute;
+      width: 1px;
+      height: 1px;
+      padding: 0;
+      margin: -1px;
+      overflow: hidden;
+      clip: rect(0, 0, 0, 0);
+      white-space: nowrap;
+      border: 0;
+    }
+
+    .page { width: 100%; overflow: clip; }
+    .hero-scroll { position: relative; z-index: 1; height: 240vh; min-height: 1400px; }
+    .page-continuation {
+      position: relative;
+      z-index: auto;
+      min-height: 100svh;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      padding: clamp(96px, 12vh, 150px) clamp(24px, 4.7vw, 90px);
+      background: transparent;
+    }
+    .paper-transition {
+      position: relative;
+      z-index: 3;
+      margin-top: -1px;
+      background: transparent;
+      --paper-blue-gap: clamp(90px, 14vh, 190px);
+      --paper-black-gap: calc(clamp(90px, 14vh, 190px) - 80px);
+    }
+    .paper-blue-gap {
+      position: relative;
+      width: 100%;
+      height: var(--paper-blue-gap);
+      background: var(--night);
+    }
+    .paper-band-zone {
+      position: relative;
+      width: 100%;
+      background: var(--night);
+    }
+    .paper-black-fill {
+      position: absolute;
+      inset: 0;
+      z-index: 1;
+      background: #000;
+      clip-path: polygon(0 5.9vw, 100% 23.9vw, 100% 100%, 0 100%);
+    }
+    .paper-bottom-layer {
+      position: relative;
+      z-index: 1;
+      min-height: 100svh;
+      padding: clamp(48px, 7vw, 110px) clamp(54px, 8vw, 120px);
+      color: var(--paper);
+      background: #000;
+      overflow: clip;
+    }
+    .paper-black-gap {
+      position: relative;
+      width: 100%;
+      height: var(--paper-black-gap);
+      background: #000;
+    }
+    .about-story-stage {
+      position: relative;
+      top: -40px;
+      z-index: 2;
+      width: min(1240px, 100%);
+      min-height: 100svh;
+      margin: 0 auto;
+      display: grid;
+      gap: clamp(30px, 5vh, 64px);
+      align-content: center;
+      justify-items: center;
+      text-align: center;
+    }
+    .about-intro h2 {
+      margin: 0;
+      color: var(--paper);
+      font-family: "PingFang SC", "Source Han Sans CN", "Microsoft YaHei", sans-serif;
+      font-size: clamp(2.2rem, 4.2vw, 4.8rem);
+      font-weight: 900;
+      line-height: 1.2;
+      letter-spacing: 0;
+    }
+    .about-intro h2 span,
+    .about-manifesto span { color: var(--pink); }
+    .about-portrait-cluster {
+      position: relative;
+      width: clamp(300px, 42vw, 580px);
+      height: clamp(330px, 52vw, 620px);
+    }
+    .about-face-stack {
+      position: absolute;
+      z-index: 3;
+      left: calc(50% + 30px);
+      bottom: 0;
+      width: min(108%, 580px);
+      height: 100%;
+      max-height: 68vh;
+      transform: translateX(-50%);
+      filter: drop-shadow(0 0 2px var(--paper)) drop-shadow(0 16px 24px rgba(0, 0, 0, .22));
+      will-change: transform;
+    }
+    .about-portrait {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      object-fit: contain;
+      opacity: 0;
+      pointer-events: none;
+    }
+    .about-portrait.is-active {
+      opacity: 1;
+    }
+    .about-orbit {
+      position: absolute;
+      z-index: 2;
+      object-fit: contain;
+      pointer-events: none;
+      will-change: transform;
+    }
+    .about-heart {
+      left: -10%;
+      top: 24%;
+      width: clamp(78px, 9vw, 132px);
+      transform: rotate(-10deg);
+    }
+    .about-cloud {
+      right: calc(-13% - 10px);
+      top: 25%;
+      width: clamp(100px, 12vw, 172px);
+      mix-blend-mode: screen;
+    }
+    .about-note {
+      position: absolute;
+      z-index: 4;
+      top: 20%;
+      right: calc(-2% - 10px);
+      padding: 9px 17px;
+      border-radius: 999px;
+      background: var(--pink);
+      color: var(--ink);
+      font-size: clamp(.68rem, .9vw, .82rem);
+      font-weight: 800;
+      transform: rotate(-5deg);
+      box-shadow: 0 10px 22px rgba(0, 0, 0, .18);
+      will-change: transform;
+    }
+    .about-manifesto {
+      max-width: 12ch;
+      margin: 0;
+      margin-top: clamp(80px, 12vh, 140px);
+      color: var(--paper);
+      font-family: "PingFang SC", "Source Han Sans CN", "Microsoft YaHei", sans-serif;
+      font-size: clamp(3.4rem, 7.8vw, 8.6rem);
+      font-weight: 900;
+      line-height: 1.2;
+      letter-spacing: 0;
+      text-wrap: balance;
+    }
+    .about-hobbies {
+      width: min(1180px, 100%);
+      display: grid;
+      grid-template-columns: minmax(180px, .78fr) minmax(420px, 1.65fr) minmax(150px, .62fr);
+      grid-template-areas: "record details game";
+      align-items: center;
+      gap: 0;
+      margin-top: clamp(20px, 4vw, 52px);
+    }
+    .about-hobby-image {
+      --hobby-drift-y: 0px;
+      --hobby-drift-angle: 0deg;
+      translate: 0 var(--hobby-drift-y);
+      rotate: var(--hobby-drift-angle);
+      display: block;
+      height: auto;
+      object-fit: contain;
+      filter: drop-shadow(0 16px 22px rgba(0, 0, 0, .28));
+    }
+    .about-record-player {
+      grid-area: record;
+      z-index: 1;
+      justify-self: end;
+      width: min(124%, 320px);
+      transform: translate(-56px, -86px) rotate(-8deg);
+    }
+    .about-game-console {
+      grid-area: game;
+      z-index: 3;
+      justify-self: start;
+      width: min(122%, 235px);
+      transform: translate(16px, 68px) rotate(10deg);
+    }
+    .about-details {
+      grid-area: details;
+      position: relative;
+      z-index: 2;
+      width: 100%;
+      text-align: left;
+    }
+    .about-name {
+      margin: 0 0 18px;
+      color: var(--pink);
+      font-size: clamp(.82rem, 1vw, 1rem);
+      font-weight: 800;
+      letter-spacing: .08em;
+      text-transform: uppercase;
+    }
+    .about-copy {
+      max-width: 52ch;
+      margin: 0;
+      color: rgba(255, 253, 245, .88);
+      font-size: clamp(1.02rem, 1.35vw, 1.22rem);
+      line-height: 1.82;
+    }
+    .about-copy-accent {
+      color: var(--pink);
+      font-weight: 800;
+    }
+    .paper-top-sheet {
+      position: absolute;
+      z-index: 2;
+      inset: 0;
+      transform: translate3d(0, 0, 0);
+      backface-visibility: hidden;
+      will-change: transform;
+      contain: paint;
+    }
+    .paper-top-layer {
+      position: absolute;
+      z-index: 2;
+      inset: 0;
+      background: #1b2138;
+      -webkit-mask-image: url("assets/torn-paper-mask.webp");
+      mask-image: url("assets/torn-paper-mask.webp");
+      -webkit-mask-size: 100% 100vh;
+      mask-size: 100% 100vh;
+      -webkit-mask-position: top left;
+      mask-position: top left;
+      -webkit-mask-repeat: no-repeat;
+      mask-repeat: no-repeat;
+      -webkit-mask-mode: alpha;
+      mask-mode: alpha;
+    }
+    .torn-band {
+      position: relative;
+      z-index: 4;
+      display: block;
+      width: 100%;
+      height: auto;
+      pointer-events: none;
+    }
+    .continuation-stickers {
+      position: absolute;
+      z-index: 3;
+      inset: 0;
+      pointer-events: none;
+    }
+    .layered-text {
+      --slice-height: clamp(72px, 6.2vw, 98px);
+      --slice-shift: clamp(22px, 2.2vw, 42px);
+      position: relative;
+      z-index: 2;
+      width: min(55vw, 1040px);
+      min-height: auto;
+      margin-top: 0;
+      display: grid;
+      place-items: center;
+      color: var(--pink);
+      font-family: "PingFang SC", "Source Han Sans CN", "Noto Sans CJK SC", "Microsoft YaHei", sans-serif;
+      font-size: clamp(3rem, 4.6vw, 5.5rem);
+      font-weight: 900;
+      letter-spacing: -0.02em;
+      text-transform: none;
+      cursor: pointer;
+      user-select: none;
+      will-change: transform, opacity;
+    }
+    .layered-text:focus-visible {
+      outline: 3px solid var(--paper);
+      outline-offset: 10px;
+    }
+    .layered-text ul {
+      width: 100%;
+      margin: 0;
+      padding: 0;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      list-style: none;
+    }
+    .layered-text li {
+      position: relative;
+      height: var(--slice-height);
+      overflow: hidden;
+      contain: paint;
+      clip-path: inset(2px 0);
+      transform: translateX(calc(var(--line-x) * var(--slice-shift)));
+    }
+    .layered-text li:nth-child(odd) {
+      transform: translateX(calc(var(--line-x) * var(--slice-shift))) skew(60deg, -30deg) scaleY(.66667);
+    }
+    .layered-text li:nth-child(even) {
+      transform: translateX(calc(var(--line-x) * var(--slice-shift))) skew(0deg, -30deg) scaleY(1.33333);
+    }
+    .layered-text p {
+      height: var(--slice-height);
+      margin: 0;
+      overflow: hidden;
+      padding-inline: clamp(10px, 1vw, 18px);
+      line-height: 1.05;
+      white-space: nowrap;
+      backface-visibility: hidden;
+      transform-origin: 50% 50%;
+      will-change: transform;
+    }
+    .layered-text .word-accent {
+      color: #FF8FA3;
+    }
+    .marquee-section {
+      position: relative;
+      z-index: 4;
+      overflow: hidden;
+      padding: clamp(96px, 11vw, 160px) 0 40px;
+      background: #000;
+    }
+    .marquee-viewport {
+      display: grid;
+      gap: 12px;
+      width: 100%;
+      overflow: hidden;
+    }
+    .marquee-track {
+      display: flex;
+      width: max-content;
+      gap: 12px;
+      transform: translate3d(0, 0, 0);
+      will-change: transform;
+    }
+    .marquee-row:nth-child(2) .marquee-track { margin-left: calc(-420px * 2.4); }
+    .marquee-set { display: flex; flex: 0 0 auto; gap: 12px; }
+    .marquee-card {
+      position: relative;
+      height: clamp(230px, 30vh, 270px);
+      width: auto;
+      flex: 0 0 auto;
+      overflow: hidden;
+      border-radius: 16px;
+      background: #333547;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .marquee-card img {
+      width: auto;
+      height: 100%;
+      max-width: none;
+      object-fit: contain;
+      display: block;
+    }
+    .marquee-card.is-contain img { object-fit: contain; padding: 0; }
+    .marquee-card::after {
+      position: absolute;
+      inset: 0;
+      content: "";
+      box-shadow: inset 0 0 0 1px rgba(255, 253, 245, .12);
+      border-radius: inherit;
+      pointer-events: none;
+    }
+    .projects-stack {
+      --stack-top: clamp(96px, 8.5vw, 128px);
+      --project-gutter: clamp(16px, 3vw, 48px);
+      position: relative;
+      z-index: 5;
+      min-height: 390vh;
+      padding: clamp(88px, 9vw, 140px) var(--project-gutter) 0;
+      border-radius: 0;
+      background: #000;
+      color: var(--paper);
+    }
+    .projects-intro {
+      display: flex;
+      align-items: flex-end;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 28px;
+      margin-bottom: clamp(72px, 10vw, 140px);
+    }
+    .projects-heading {
+      max-width: 11ch;
+      margin: 0;
+      color: var(--pink);
+      font-family: "Renju Display", Georgia, serif;
+      font-size: clamp(3.5rem, 8vw, 6rem);
+      font-weight: 400;
+      line-height: .82;
+      letter-spacing: .01em;
+    }
+    .projects-portfolio-link {
+      color: var(--paper);
+      font-size: clamp(.9rem, 1.2vw, 1.05rem);
+      font-weight: 800;
+      text-decoration-color: var(--pink);
+      text-decoration-thickness: 2px;
+      text-underline-offset: 7px;
+      transition: color 200ms ease;
+    }
+    .projects-portfolio-link:hover { color: var(--pink); }
+    .projects-portfolio-link:focus-visible { outline: 3px solid var(--pink); outline-offset: 7px; }
+    .project-shell {
+      position: sticky;
+      z-index: calc(10 + var(--card-index));
+      top: calc(var(--stack-top) + var(--card-index) * 28px);
+      height: calc(85vh - var(--card-index) * 28px);
+      min-height: 680px;
+    }
+    .project-card {
+      position: relative;
+      display: grid;
+      grid-template-rows: auto minmax(0, 1fr);
+      width: 100%;
+      height: min(72vh, 760px);
+      min-height: 610px;
+      padding: clamp(16px, 2vw, 32px);
+      overflow: hidden;
+      border: 2px solid #d7e2ea;
+      border-radius: clamp(40px, 4vw, 60px);
+      background: #000;
+      transform: scale(1);
+      transform-origin: 50% 0;
+      will-change: transform;
+    }
+    .project-card-header {
+      display: grid;
+      grid-template-columns: auto minmax(120px, .55fr) minmax(240px, 1fr);
+      align-items: center;
+      gap: clamp(18px, 3vw, 52px);
+      min-width: 0;
+      padding: 0 8px clamp(18px, 2vw, 28px);
+    }
+    .project-number {
+      color: var(--pink);
+      font-family: "Renju Display", Georgia, serif;
+      font-size: clamp(3.5rem, 7vw, 6rem);
+      line-height: .75;
+    }
+    .project-category {
+      color: rgba(255, 253, 245, .66);
+      font-size: .75rem;
+      font-weight: 800;
+      letter-spacing: .14em;
+      text-transform: uppercase;
+    }
+    .project-name {
+      min-width: 0;
+      margin: 0;
+      overflow-wrap: anywhere;
+      font-size: clamp(1.5rem, 3vw, 3.5rem);
+      font-weight: 900;
+      line-height: .95;
+      letter-spacing: -.025em;
+    }
+    .project-media {
+      display: grid;
+      min-height: 0;
+      grid-template-columns: minmax(0, 2fr) minmax(0, 3fr);
+      gap: clamp(10px, 1.4vw, 20px);
+    }
+    .project-media-left {
+      display: grid;
+      min-height: 0;
+      grid-template-rows: 1fr 1fr;
+      gap: clamp(10px, 1.4vw, 20px);
+    }
+    .project-image {
+      position: relative;
+      min-width: 0;
+      min-height: 0;
+      overflow: hidden;
+      border-radius: clamp(24px, 3vw, 40px);
+      background: #333547;
+    }
+    .project-image img { width: 100%; height: 100%; object-fit: cover; }
+    .project-image.is-contain img { object-fit: contain; padding: clamp(12px, 2vw, 28px); }
+    .project-scene-grid {
+      display: grid;
+      min-height: 0;
+      grid-template-columns: minmax(0, 1.5fr) minmax(0, 1fr);
+      grid-template-rows: minmax(0, 1fr) minmax(0, 1fr);
+      gap: clamp(10px, 1.4vw, 20px);
+    }
+    .project-scene-grid .project-image { margin: 0; border-radius: clamp(18px, 2vw, 28px); background: #090909; }
+    .project-scene-grid .project-image--hero { grid-row: 1 / 3; }
+    .project-scene-grid .project-image img { display: block; object-position: 50% 50%; }
+    .project-scene-grid .project-image--hero img { object-position: 50% 48%; }
+    .project-scene-grid figcaption {
+      position: absolute;
+      right: 12px;
+      bottom: 12px;
+      padding: 7px 10px;
+      border-radius: 6px;
+      background: rgba(0, 0, 0, .82);
+      color: var(--paper);
+      font-size: clamp(.68rem, .85vw, .82rem);
+      font-weight: 700;
+      letter-spacing: .04em;
+    }
+    .project-phone-stage {
+      display: grid;
+      position: relative;
+      min-height: 0;
+      overflow: hidden;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      align-items: center;
+      background: #000;
+    }
+    .project-phone {
+      position: relative;
+      min-width: 0;
+      width: 100%;
+      height: 100%;
+      margin: 0;
+    }
+    .project-phone img {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      display: block;
+      width: auto;
+      max-width: none;
+      height: var(--phone-image-height, 106%);
+      object-fit: contain;
+      transform: translate(-50%, -50%);
+      filter: drop-shadow(0 22px 28px rgba(0, 0, 0, .42));
+    }
+    .project-phone--discover {
+      z-index: 1;
+      --phone-image-height: 98%;
+      transform: translate(20%, 2%) rotate(-5deg);
+    }
+    .project-phone--home { z-index: 3; --phone-image-height: 97%; }
+    .project-phone--itinerary {
+      z-index: 2;
+      --phone-image-height: 98%;
+      transform: translate(-20%, 2%) rotate(5deg);
+    }
+    .project-phone-stage--pet .project-phone--social {
+      z-index: 1;
+      --phone-image-height: 100%;
+      transform: translate(25%, 4%) rotate(-10deg);
+    }
+    .project-phone-stage--pet .project-phone--home {
+      z-index: 3;
+      --phone-image-height: 111%;
+      transform: translateY(-1%) rotate(2deg);
+    }
+    .project-phone-stage--pet .project-phone--map {
+      z-index: 2;
+      --phone-image-height: 102%;
+      transform: translate(-25%, -4%) rotate(8deg);
+    }
+    .project-shell:nth-of-type(2n) .project-image { background: #f1eae0; }
+    .project-finish {
+      position: relative;
+      z-index: 30;
+      display: grid;
+      width: calc(100% + var(--project-gutter) * 2);
+      margin-inline: calc(-1 * var(--project-gutter));
+      height: 100vh;
+      height: 100dvh;
+      place-items: center;
+      background: #000;
+      color: var(--pink);
+      font-family: "Renju Display", Georgia, serif;
+      font-size: clamp(4rem, 12vw, 6rem);
+      line-height: .8;
+      text-align: center;
+    }
+    .continuation-camera {
+      position: absolute;
+      z-index: 3;
+      top: clamp(110px, 20vh, 205px);
+      right: clamp(135px, 15vw, 290px);
+      width: clamp(220px, 22vw, 360px);
+      transform: rotate(15deg);
+      transform-origin: 50% 50%;
+      filter: drop-shadow(0 18px 14px rgba(7, 10, 26, .25));
+      pointer-events: none;
+      user-select: none;
+      animation: continuation-camera-float 6.8s ease-in-out -2.1s infinite;
+      animation-play-state: paused;
+      will-change: translate;
+    }
+    .continuation-avatar {
+      position: absolute;
+      z-index: 4;
+      top: clamp(350px, 61vh, 610px);
+      right: clamp(28px, 4vw, 76px);
+      width: clamp(118px, 11vw, 185px);
+      aspect-ratio: 696 / 806;
+      margin: 0;
+      padding: 0;
+      border: 0;
+      color: inherit;
+      background: transparent;
+      cursor: default;
+      pointer-events: none;
+      filter: drop-shadow(0 14px 12px rgba(7, 10, 26, .24));
+      animation: continuation-avatar-float 5.6s ease-in-out -.8s infinite;
+      animation-play-state: paused;
+      will-change: translate, transform;
+    }
+    body.continuation-float-active .continuation-camera,
+    body.continuation-float-active .continuation-avatar { animation-play-state: running; }
+    .continuation-expression {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      object-fit: contain;
+      display: block;
+      opacity: 0;
+      pointer-events: none;
+      transition: none;
+      will-change: opacity;
+    }
+    .continuation-expression.is-active {
+      opacity: 1;
+    }
+    .hero-stage {
+      position: relative;
+      width: 100%;
+      height: 100svh;
+      min-height: 620px;
+      overflow: visible;
+      isolation: isolate;
+      background: transparent;
+    }
+    .wordmark {
+      position: absolute;
+      z-index: 1;
+      top: clamp(22px, 4.5vh, 52px);
+      left: 50%;
+      width: calc(100vw - clamp(36px, 7vw, 86px));
+      margin: 0;
+      transform: translateX(-50%);
+      color: var(--pink);
+      font-family: "Renju Display", "Die Grotesk", sans-serif;
+      font-size: clamp(4.6rem, 14.45vw, 17.4rem);
+      font-weight: 400;
+      line-height: 0.75;
+      letter-spacing: 0.015em;
+      text-align: center;
+      white-space: nowrap;
+      user-select: none;
+      pointer-events: none;
+    }
+    .corner-daisy {
+      position: absolute;
+      z-index: 2;
+      top: clamp(24px, 4.5vh, 54px);
+      left: clamp(18px, 3.4vw, 64px);
+      width: clamp(121px, 14vw, 218px);
+      aspect-ratio: 1;
+      pointer-events: none;
+      will-change: transform;
+    }
+    .corner-daisy img {
+      width: 100%;
+      height: 100%;
+      object-fit: contain;
+      rotate: -11deg;
+      filter: drop-shadow(0 12px 14px rgba(7, 10, 26, .24));
+      animation: corner-daisy-float 5.8s ease-in-out -2.2s infinite;
+      animation-play-state: paused;
+      will-change: transform, translate, rotate;
+    }
+    body.brain-float-active .corner-daisy img { animation-play-state: running; }
+
+    .home-wordmark {
+      position: fixed;
+      z-index: 40;
+      top: clamp(30px, 4.1vw, 50px);
+      left: clamp(20px, 3.5vw, 54px);
+      color: var(--pink);
+      font-family: "Renju Display", "Die Grotesk", sans-serif;
+      font-size: clamp(1.75rem, 2.6vw, 2.85rem);
+      font-weight: 400;
+      line-height: .75;
+      letter-spacing: .015em;
+      text-decoration-line: underline;
+      text-decoration-color: transparent;
+      text-decoration-thickness: .06em;
+      text-underline-offset: .16em;
+      opacity: 0;
+      visibility: hidden;
+      transform: translate3d(0, -10px, 0);
+      pointer-events: none;
+      transition:
+        opacity 260ms ease,
+        visibility 260ms ease,
+        transform 420ms cubic-bezier(.16, 1, .3, 1),
+        text-decoration-color 180ms ease;
+    }
+    .home-wordmark.is-visible {
+      opacity: 1;
+      visibility: visible;
+      transform: translate3d(0, 0, 0);
+      pointer-events: auto;
+    }
+    .home-wordmark:is(:hover, :focus-visible) { text-decoration-color: currentColor; }
+
+    .top-actions {
+      position: fixed;
+      z-index: 40;
+      top: clamp(24px, 4vw, 48px);
+      right: clamp(20px, 3.5vw, 54px);
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+    .round-button {
+      min-height: 56px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      text-decoration: none;
+      cursor: pointer;
+      transition: transform 320ms cubic-bezier(.2,.8,.2,1), background-color 220ms ease, color 220ms ease;
+    }
+    .round-button {
+      width: 56px;
+      border-radius: 50%;
+      color: var(--ink);
+      background: var(--paper);
+    }
+    .round-button:hover { transform: scale(.96); background: var(--pink); }
+    .menu-glyph { position: relative; width: 18px; height: 12px; }
+    .menu-glyph::before,
+    .menu-glyph::after {
+      content: "";
+      position: absolute;
+      left: 1px;
+      width: 16px;
+      height: 2px;
+      border-radius: 2px;
+      background: currentColor;
+      transition: transform 300ms ease, top 300ms ease;
+    }
+    .menu-glyph::before { top: 3px; }
+    .menu-glyph::after { top: 8px; }
+    body.menu-open .menu-glyph::before { top: 6px; transform: rotate(45deg); }
+    body.menu-open .menu-glyph::after { top: 6px; transform: rotate(-45deg); }
+
+    .menu-panel {
+      position: fixed;
+      z-index: 35;
+      inset: 0;
+      display: grid;
+      place-items: center;
+      background: var(--pink);
+      color: var(--night);
+      clip-path: circle(0 at calc(100% - 84px) 72px);
+      visibility: hidden;
+      transition: clip-path 750ms cubic-bezier(.76,0,.24,1), visibility 0s linear 750ms;
+    }
+    body.menu-open .menu-panel {
+      clip-path: circle(150% at calc(100% - 84px) 72px);
+      visibility: visible;
+      transition: clip-path 750ms cubic-bezier(.76,0,.24,1), visibility 0s;
+    }
+    .menu-panel nav {
+      display: grid;
+      justify-items: center;
+      gap: clamp(6px, 1vh, 12px);
+      width: min(92vw, 980px);
+      text-align: center;
+    }
+    .menu-panel a {
+      --menu-tilt: 0deg;
+      display: block;
+      width: max-content;
+      max-width: 100%;
+      transform: rotate(var(--menu-tilt)) scale(1);
+      transform-origin: 50% 50%;
+      text-decoration: underline;
+      text-decoration-color: transparent;
+      text-decoration-thickness: .06em;
+      text-underline-offset: .08em;
+      font-size: clamp(2.6rem, 7vw, 6rem);
+      font-weight: 700;
+      line-height: 1.02;
+      letter-spacing: -.03em;
+      transition: transform 300ms cubic-bezier(.2,.8,.2,1), text-decoration-color 220ms ease;
+    }
+    .menu-panel a:nth-child(1) { --menu-tilt: -4deg; }
+    .menu-panel a:nth-child(2) { --menu-tilt: 0deg; }
+    .menu-panel a:nth-child(3) { --menu-tilt: -5deg; }
+    .menu-panel a:nth-child(4) { --menu-tilt: 3deg; }
+    .menu-panel a:is(:hover, :focus-visible) {
+      transform: rotate(0deg) scale(1.055);
+      text-decoration-color: currentColor;
+    }
+.avatar-wrap {
+      --tear-edge-opacity: 0;
+      --head-clip: polygon(
+        0 0, 100% 0, 100% 42.8%, 96% 43.1%, 91% 41.5%, 86% 44%,
+        80% 42.7%, 73% 44.5%, 66% 43.4%, 58% 45.4%, 51% 44%,
+        43% 45.7%, 36% 44.1%, 29% 45.4%, 22% 43.6%, 15% 44.7%,
+        8% 42.5%, 3% 43.4%, 0 42.8%
+      );
+      /* face-bottom sits above head-top; lift its tear edge ~0.4% (~4px) so the
+         two clipped layers overlap on identical image pixels, killing the 1px
+         background seam that otherwise shows while the portrait is closed. */
+      --face-clip: polygon(
+        0 42.4%, 3% 43.0%, 8% 42.1%, 15% 44.3%, 22% 43.2%,
+        29% 45.0%, 36% 43.7%, 43% 45.3%, 51% 43.6%, 58% 45.0%,
+        66% 43.0%, 73% 44.1%, 80% 42.3%, 86% 43.6%, 91% 41.1%,
+        96% 42.7%, 100% 42.4%, 100% 100%, 0 100%
+      );
+      z-index: 10;
+    }
+    .avatar-wrap {
+      position: absolute;
+      top: calc(58% + 18px);
+      left: calc(50% + 34px);
+      width: var(--hero-w);
+      aspect-ratio: 6 / 7;
+      transform: translate(-50%, -50%);
+      transform-origin: 50% 50%;
+      filter: drop-shadow(0 10px 20px rgba(0, 0, 0, .4));
+      will-change: transform, clip-path, opacity, filter;
+    }
+    .head-top,
+    .face-bottom {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      pointer-events: none;
+      will-change: transform;
+    }
+    .head-top {
+      z-index: 14;
+    }
+    /* Lower face stays above the torn backing and every brain item. */
+    .face-bottom {
+      z-index: 15;
+      isolation: isolate;
+    }
+    .portrait {
+      width: 100%;
+      height: 100%;
+      object-fit: contain;
+      object-position: 50% 50%;
+      user-select: none;
+      -webkit-user-drag: none;
+      filter: drop-shadow(0 10px 6px rgba(5, 8, 22, .1));
+    }
+
+    /*
+      COMPLEMENTARY TEAR LINE
+      The upper layer and all expression layers share one locked silhouette. The
+      points around 43% form the same tear: head above, expression below.
+      Adjust only these paired values if the forehead line in your portrait differs.
+    */
+    .head-top .portrait {
+      position: absolute;
+      inset: 0;
+      z-index: 1;
+      clip-path: var(--head-clip);
+    }
+    .head-top::after {
+      content: "";
+      position: absolute;
+      z-index: 0;
+      inset: 0;
+      background: url("assets/face-happy-fitted.webp") 50% 50% / contain no-repeat;
+      clip-path: var(--head-clip);
+      transform: translateY(clamp(5px, .65vw, 8px));
+      opacity: var(--tear-edge-opacity);
+      filter: brightness(0) invert(1) drop-shadow(0 2px 1px rgba(0,0,0,.12));
+      will-change: transform, opacity;
+      pointer-events: none;
+    }
+    .face-bottom .portrait {
+      position: absolute;
+      inset: 0;
+      clip-path: var(--face-clip);
+    }
+    .face-bottom::before {
+      content: "";
+      position: absolute;
+      z-index: 0;
+      inset: 0;
+      background: url("assets/face-happy-fitted.webp") 50% 50% / contain no-repeat;
+      clip-path: var(--face-clip);
+      transform: translateY(clamp(-8px, -.65vw, -5px));
+      opacity: var(--tear-edge-opacity);
+      filter: brightness(0) invert(1) drop-shadow(0 -2px 1px rgba(0,0,0,.12));
+      will-change: transform, opacity;
+      pointer-events: none;
+    }
+    .expression-layer {
+      z-index: 0;
+      opacity: 0;
+      visibility: hidden;
+    }
+    .expression-layer.is-active {
+      z-index: 1;
+      opacity: 1;
+      visibility: visible;
+    }
+
+    .asset-fallback {
+      position: absolute;
+      inset: 6% 14% 0;
+      display: none;
+      border: 4px dashed rgba(255,255,255,.7);
+      border-radius: 46% 46% 40% 40% / 38% 38% 58% 58%;
+      place-items: center;
+      color: rgba(255,255,255,.88);
+      background: rgba(255,143,170,.12);
+      text-align: center;
+      font-size: clamp(.8rem, 1.3vw, 1rem);
+      line-height: 1.25;
+      padding: 30px;
+    }
+    .avatar-wrap.is-missing .asset-fallback { display: grid; }
+    .avatar-wrap.is-missing .head-top,
+    .avatar-wrap.is-missing .face-bottom { display: none; }
+
+    .brain-items {
+      position: absolute;
+      z-index: 13;
+      inset: 4% 4% 45%;
+      transform: translateX(-28px) scale(var(--brain-scale));
+      transform-origin: 50% 100%;
+      pointer-events: none;
+    }
+    .brain-item {
+      position: absolute;
+      transform-origin: 50% 90%;
+      will-change: transform, opacity;
+      filter: drop-shadow(0 18px 12px rgba(7, 10, 26, .23));
+    }
+    .brain-item img { width: 100%; height: 100%; object-fit: contain; }
+    .brain-item > img,
+    .brain-item > .object-fallback {
+      --float-duration: 7.2s;
+      --float-delay: -1.4s;
+      animation: brain-float-a var(--float-duration) ease-in-out var(--float-delay) infinite alternate;
+      animation-play-state: paused;
+      will-change: translate;
+    }
+    body.brain-float-active .brain-item > img,
+    body.brain-float-active .brain-item > .object-fallback { animation-play-state: running; }
+    .brain-item .object-fallback {
+      display: none;
+      width: 100%;
+      height: 100%;
+      place-items: center;
+      border: 4px solid var(--paper);
+      background: var(--pink);
+      color: var(--night);
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: .03em;
+      box-shadow: 0 10px 22px rgba(6,8,24,.22);
+    }
+    .brain-item.is-missing img { display: none; }
+    .brain-item.is-missing .object-fallback { display: grid; }
+    .item-wind { z-index: 0; width: 26.25%; height: 34.65%; left: -.5%; bottom: calc(-4% + 5px); rotate: -8deg; }
+    .item-wind > img, .item-wind > .object-fallback { --float-duration: 7.2s; --float-delay: -1.4s; animation-name: brain-float-a; }
+    .item-wind .object-fallback { border-radius: 16px; background: #dceaf0; color: #1a1f38; }
+    .item-camera {
+      width: 33.6%;
+      height: 37.8%;
+      left: 15%;
+      bottom: -5%;
+      padding: 0;
+      border: 0;
+      background: transparent;
+      color: inherit;
+      font: inherit;
+      appearance: none;
+      rotate: -12deg;
+    }
+    .item-camera > img, .item-camera > .object-fallback { --float-duration: 6.6s; --float-delay: -3.2s; animation-name: brain-float-b; }
+    .item-camera .object-fallback { border-radius: 16px; }
+    .item-book { z-index: 3; width: 38%; height: 48%; left: 34%; bottom: -6%; rotate: -5deg; }
+    .item-book > img, .item-book > .object-fallback { --float-duration: 8.1s; --float-delay: -2.1s; animation-name: brain-float-c; }
+    .item-book img { transform: scale(1.28); }
+    .item-book .object-fallback { border-radius: 16px; background: #f5dfbd; color: var(--night); }
+    .item-camera,
+    .item-book {
+      pointer-events: auto;
+      cursor: pointer;
+      padding: 0;
+      border: 0;
+      background: transparent;
+      color: inherit;
+      font: inherit;
+      appearance: none;
+    }
+    .item-book {
+      color: inherit;
+      text-decoration: none;
+    }
+    .item-camera:focus-visible,
+    .item-book:focus-visible {
+      outline: 3px solid var(--pink);
+      outline-offset: 6px;
+      border-radius: 16px;
+    }
+    .item-cloud { z-index: 0; width: 44%; height: 55%; right: -1%; bottom: calc(-6% - 5px); rotate: 3deg; }
+    .item-cloud > img, .item-cloud > .object-fallback { --float-duration: 9.2s; --float-delay: -5.1s; animation-name: brain-float-b; }
+    .item-cloud .object-fallback { border-radius: 50%; background: #eef2f4; color: var(--night); }
+    .item-daisy { z-index: 4; width: 30%; height: 45%; right: 18%; bottom: -7%; rotate: 5deg; }
+    .item-daisy > img, .item-daisy > .object-fallback { --float-duration: 7.5s; --float-delay: -4.3s; animation-name: brain-float-c; }
+    .item-daisy .object-fallback { border-radius: 16px; background: #f4e78e; color: var(--night); }
+    .item-heart { z-index: 1; width: 23%; height: 31%; right: 13%; bottom: -5%; rotate: 8deg; }
+    .item-heart > img, .item-heart > .object-fallback { --float-duration: 6.9s; --float-delay: -2.8s; animation-name: brain-float-a; }
+    .item-heart .object-fallback { border-radius: 50%; background: #ff454d; color: white; }
+    .brain-tooltip {
+      position: fixed;
+      z-index: 80;
+      left: 0;
+      top: 0;
+      width: max-content;
+      max-width: min(260px, calc(100vw - 24px));
+      padding: 14px 19px 15px;
+      color: var(--night);
+      background: var(--paper) url("assets/paper-crease.webp") 50% 50% / cover no-repeat;
+      clip-path: polygon(
+        0 13%, 4% 5%, 11% 8%, 18% 2%, 27% 6%, 36% 1%, 45% 5%,
+        55% 0, 65% 4%, 75% 1%, 84% 6%, 93% 3%, 100% 11%,
+        98% 26%, 100% 41%, 98% 57%, 100% 73%, 96% 88%, 88% 96%,
+        78% 92%, 68% 99%, 58% 94%, 48% 100%, 38% 95%, 28% 99%,
+        18% 93%, 8% 97%, 1% 88%, 3% 73%, 0 58%, 2% 43%, 0 28%
+      );
+      filter:
+        drop-shadow(0 0 1px rgba(255, 255, 255, 1))
+        drop-shadow(0 0 3px rgba(255, 255, 255, .98))
+        drop-shadow(0 12px 14px rgba(6, 8, 24, .2));
+      opacity: 0;
+      visibility: hidden;
+      pointer-events: none;
+      will-change: transform, opacity;
+    }
+    .brain-tooltip strong {
+      display: block;
+      margin-bottom: 3px;
+      color: var(--night);
+      font-size: .82rem;
+      line-height: 1;
+      letter-spacing: .04em;
+      text-transform: uppercase;
+    }
+    .brain-tooltip span {
+      display: block;
+      color: #4a4f62;
+      font-size: .72rem;
+      line-height: 1.25;
+    }
+    .hero-intro {
+      position:absolute;z-index:25;
+      left:clamp(24px,3.4vw,54px);bottom:clamp(48px,8vh,88px);
+      width:310px;max-width:30vw;text-align:left;
+    }
+    .hero-intro h2{margin:0 0 16px;color:var(--pink);font-size:clamp(23px,2.1vw,32px);line-height:1.3;letter-spacing:-.02em}
+    .hero-intro h2 strong{font:1.2em/1 "Renju Display",sans-serif}
+    .hero-intro p{margin:0;color:var(--paper);font-size:15px;line-height:1.9}
+    .hero-intro .intro-disciplines{margin-top:19px;font-size:10px;line-height:1.8;letter-spacing:.065em;color:#c6cbdc}
+    @media(max-width:900px){.hero-intro{left:24px;bottom:40px;width:260px;max-width:36vw}.hero-intro p{font-size:13px}}
+    @media(max-width:620px){.hero-intro{left:20px;bottom:28px;width:230px;max-width:calc(100% - 80px)}.hero-intro h2{font-size:24px;margin-bottom:10px}.hero-intro p{font-size:12px;line-height:1.8}.hero-intro .intro-disciplines{font-size:8px;letter-spacing:.02em;margin-top:12px}}
+
+    .hero-burger{position:absolute;z-index:24;right:clamp(30px,4.4vw,70px);bottom:132px;width:clamp(150px,16vw,245px);aspect-ratio:353/272;overflow:visible;transform:rotate(7deg);pointer-events:none}
+    .hero-burger-art{position:relative;width:100%;height:100%;aspect-ratio:353/272;overflow:hidden}
+    .hero-burger img{position:absolute;display:block;width:200.84986%;max-width:none;height:auto;left:-49.57507%;top:-94.85294%}
+    @media(max-width:900px){.hero-burger{width:150px;right:22px;bottom:116px}}
+    @media(max-width:620px){.hero-burger{width:94px;right:17px;bottom:93px}}
+    .socials {
+      position: absolute;
+      z-index: 25;
+      right: clamp(20px, 3.4vw, 54px);
+      bottom: clamp(26px, 4vh, 44px);
+      display: flex;
+      gap: 10px;
+    }
+    .social-link {
+      width: clamp(44px, 4.2vw, 54px);
+      aspect-ratio: 1;
+      display: grid;
+      place-items: center;
+      border: 1px solid var(--line);
+      border-radius: 50%;
+      color: var(--paper);
+      transition: transform 280ms cubic-bezier(.2,.8,.2,1), border-color 220ms ease, background-color 220ms ease, color 220ms ease;
+    }
+    .social-link:hover { transform: translateY(-5px) rotate(-4deg); border-color: var(--pink); color: var(--night); background: var(--pink); }
+    .social-link svg { width: 20px; height: 20px; fill: currentColor; }
+
+    .scroll-cue {
+      position: absolute;
+      z-index: 22;
+      left: 50%;
+      bottom: 24px;
+      display: flex;
+      align-items: center;
+      gap: 9px;
+      transform: translateX(-50%);
+      color: rgba(255,255,255,.72);
+      font-size: .74rem;
+      letter-spacing: .1em;
+      text-transform: uppercase;
+      pointer-events: none;
+    }
+    .scroll-cue::after {
+      content: "";
+      width: 34px;
+      height: 1px;
+      background: currentColor;
+      transform-origin: left;
+      animation: cue 1.8s ease-in-out infinite;
+    }
+    @keyframes brain-float-a {
+      0% { translate: -2px 2px; }
+      50% { translate: 3px -3px; }
+      100% { translate: -1px 4px; }
+    }
+    @keyframes brain-float-b {
+      0% { translate: 3px -1px; }
+      50% { translate: -3px 3px; }
+      100% { translate: 2px -4px; }
+    }
+    @keyframes brain-float-c {
+      0% { translate: -3px -2px; }
+      50% { translate: 2px 4px; }
+      100% { translate: 4px 0; }
+    }
+    @keyframes corner-daisy-float {
+      0%, 100% { translate: -1px 2px; rotate: -11deg; }
+      18% { translate: 2px -3px; rotate: -10.4deg; }
+      37% { translate: -3px -1px; rotate: -11.7deg; }
+      54% { translate: 1px 3px; rotate: -10.7deg; }
+      73% { translate: 3px -2px; rotate: -11.4deg; }
+      88% { translate: -2px 1px; rotate: -10.8deg; }
+    }
+    @keyframes continuation-camera-float {
+      0%, 100% { translate: 0 2px; }
+      21% { translate: -9px -7px; }
+      46% { translate: 7px -11px; }
+      68% { translate: 12px 5px; }
+      84% { translate: -6px 9px; }
+    }
+    @keyframes continuation-avatar-float {
+      0%, 100% { translate: 2px 0; }
+      19% { translate: 10px -9px; }
+      43% { translate: -7px -13px; }
+      66% { translate: -12px 5px; }
+      86% { translate: 5px 9px; }
+    }
+    @keyframes cue { 0%,100% { transform: scaleX(.35); opacity: .45; } 50% { transform: scaleX(1); opacity: 1; } }
+
+    @media (max-width: 900px) {
+      :root { --hero-w: min(116.85vw, 817px); --brain-scale: .8947; }
+      .hero-scroll { min-height: 1320px; }
+      .wordmark { top: 86px; width: calc(100vw - 24px); font-size: clamp(4rem, 18.2vw, 9rem); }
+      .corner-daisy { top: 62px; left: 12px; width: clamp(100px, 19.3vw, 144px); }
+      .home-wordmark { top: 34px; left: 18px; font-size: clamp(1.55rem, 5.4vw, 2.2rem); }
+      .continuation-camera { right: 5vw; width: clamp(190px, 29vw, 275px); }
+      .continuation-avatar { right: 3vw; width: clamp(112px, 16vw, 150px); }
+      .avatar-wrap { top: calc(50% + 18px); }
+      .top-actions { top: 20px; right: 18px; }
+      .round-button { width: 50px; min-height: 50px; }
+
+      .socials { right: 14px; bottom: 22px; gap: 6px; }
+      .social-link { width: 43px; }
+      .scroll-cue { display: none; }
+    }
+
+    @media (max-width: 620px) {
+      :root { --hero-w: min(148.2vw, 689.7px); --brain-scale: .8947; }
+      .hero-stage { min-height: 620px; }
+      .page-continuation { padding: 96px 16px; }
+      .layered-text {
+        --slice-height: clamp(44px, 12vw, 58px);
+        --slice-shift: clamp(12px, 4vw, 20px);
+        width: 100%;
+        min-height: auto;
+        margin-top: 0;
+        font-size: clamp(1.9rem, 9vw, 3rem);
+      }
+      .continuation-camera {
+        top: 9vh;
+        right: 8px;
+        width: clamp(128px, 36vw, 168px);
+        transform: rotate(15deg);
+      }
+      .continuation-avatar {
+        top: 31vh;
+        right: 10px;
+        width: clamp(92px, 24vw, 116px);
+      }
+      .wordmark { top: 92px; font-size: 20.5vw; }
+      .corner-daisy { top: 72px; left: 8px; width: clamp(80px, 23.4vw, 113px); }
+
+
+
+
+      .socials { right: 10px; bottom: 16px; display: flex; }
+      .social-link { width: 40px; }
+      .brain-items { inset-inline: 1%; }
+      .marquee-section { padding-top: 96px; }
+      .marquee-card { width: auto; height: 190px; }
+      .marquee-card img { height: 100%; width: auto; }
+      .marquee-row:nth-child(2) .marquee-track { margin-left: -360px; }
+      .projects-stack { --stack-top: 76px; --project-gutter: 10px; border-radius: 0; }
+      .projects-intro { margin-inline: 10px; margin-bottom: 72px; }
+      .project-shell {
+        top: calc(var(--stack-top) + var(--card-index) * 18px);
+        height: calc(88vh - var(--card-index) * 18px);
+        min-height: 560px;
+      }
+      .project-card {
+        height: calc(100svh - 96px - var(--card-index) * 18px);
+        min-height: 560px;
+        padding: 12px;
+        border-radius: 40px;
+      }
+      .project-card-header {
+        grid-template-columns: auto 1fr;
+        gap: 12px;
+        padding: 4px 4px 14px;
+      }
+      .project-category { display: none; }
+      .project-number { font-size: 2.8rem; }
+      .project-name { font-size: clamp(1.15rem, 5vw, 1.65rem); }
+      .project-media { gap: 8px; }
+      .project-media-left { gap: 8px; }
+      .project-image { border-radius: 24px; }
+      .project-scene-grid {
+        grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+        grid-template-rows: minmax(0, 1.18fr) minmax(0, .82fr);
+        gap: 8px;
+      }
+      .project-scene-grid .project-image--hero { grid-column: 1 / 3; grid-row: 1; }
+      .project-scene-grid .project-image--hero img { object-fit: contain; }
+      .project-scene-grid figcaption { right: 8px; bottom: 8px; padding: 5px 7px; font-size: .62rem; }
+      .project-phone--discover { --phone-image-height: 83%; transform: translate(12%, 6%) rotate(-7deg); }
+      .project-phone--home { --phone-image-height: 95%; }
+      .project-phone--itinerary { --phone-image-height: 83%; transform: translate(-12%, 6%) rotate(7deg); }
+      .project-phone-stage--pet .project-phone--social { --phone-image-height: 78%; transform: translate(12%, 8%) rotate(-10deg); }
+      .project-phone-stage--pet .project-phone--home { --phone-image-height: 97%; transform: translateY(-1%) rotate(2deg); }
+      .project-phone-stage--pet .project-phone--map { --phone-image-height: 80%; transform: translate(-12%, -8%) rotate(8deg); }
+      .paper-bottom-layer { min-height: 100svh; padding: 28px 20px; }
+      .about-story-stage { gap: 30px; padding-block: 64px; }
+      .about-intro h2 { font-size: clamp(2.4rem, 11vw, 4rem); }
+      .about-portrait-cluster { width: min(88vw, 420px); height: min(112vw, 480px); }
+      .about-heart { left: 0; top: 20%; width: 72px; }
+      .about-cloud { right: calc(-2% - 10px); top: 24%; width: 96px; }
+      .about-note { top: 18%; right: calc(2% - 10px); padding: 7px 12px; }
+      .about-manifesto { max-width: none; margin-top: 50px; font-size: clamp(2.9rem, 11.8vw, 5rem); }
+      .about-hobbies {
+        grid-template-columns: 1.12fr .88fr;
+        grid-template-areas: "record game" "details details";
+        gap: 34px 8px;
+        margin-top: 22px;
+      }
+      .about-record-player { width: min(48vw, 205px); transform: translate(-2px, -16px) rotate(-7deg); }
+      .about-game-console { width: min(39vw, 165px); transform: translate(2px, 14px) rotate(9deg); }
+      .about-details { text-align: center; }
+      .about-name, .about-copy { text-align: center; }
+      .about-copy { max-width: 31ch; margin-inline: auto; }
+      .paper-top-copy { inset: 28px 20px auto; height: 30vh; }
+      .paper-top-action { margin-bottom: 0; padding: 15px 24px; }
+    }
+
+    @media (max-height: 660px) and (min-width: 800px) {
+      :root { --hero-w: min(66.5vw, 752.4px); --brain-scale: .8737; }
+      .wordmark { top: 28px; }
+    }
+
+    @media (min-width: 1500px) {
+      :root { --brain-scale: .8737; }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      html { scroll-behavior: auto; }
+      *, *::before, *::after { animation-duration: .001ms !important; animation-iteration-count: 1 !important; transition-duration: .001ms !important; }
+      .hero-scroll { height: 100svh; min-height: 620px; }
+      .avatar-wrap { --tear-edge-opacity: 1; }
+      .head-top { transform: translateY(-12%) !important; }
+      .brain-item { opacity: 1 !important; visibility: visible !important; transform: none !important; }
+      .paper-bottom-layer { min-height: 100svh; }
+      .scroll-cue { display: none; }
+    }
+  </style>
+<link rel="stylesheet" href="assets/scene-transition.css">
+<script src="assets/scene-transition.js" defer></script>
+</head>
+
+<body>
+  <main class="page" id="home">
+    <section class="hero-scroll" aria-labelledby="hero-title">
+      <div class="hero-stage">
+        <h1 id="hero-title" class="wordmark">OREKI</h1>
+        <div class="corner-daisy" aria-hidden="true">
+          <img src="assets/corner-daisy.webp" alt="" onerror="this.closest('.corner-daisy').hidden = true">
+        </div>
+
+        <div class="avatar-wrap" aria-label="Interactive torn-paper portrait">
+          <div class="brain-items" aria-label="Creative interests">
+            <div class="brain-item item-wind" data-depth="0.55">
+              <img src="assets/wind-leaves.webp" alt="" onerror="markMissing(this)">
+              <span class="object-fallback">Wind</span>
+            </div>
+            <a class="brain-item item-camera" data-scene-link href="design.html" data-depth="1.05" data-hover-title="照片" data-hover-copy="打开照片页面。" aria-label="打开照片页面">
+              <img data-scene-origin src="assets/camera.webp" alt="" onerror="markMissing(this)">
+              <span class="object-fallback">照片</span>
+            </a>
+            <a class="brain-item item-book" data-scene-link href="portfolio.html" data-depth="0.72" data-hover-title="设计稿" data-hover-copy="打开设计稿页面。" data-base-scale="1.28" aria-label="打开设计稿页面">
+              <img data-scene-origin src="assets/book.webp" alt="" onerror="markMissing(this)">
+              <span class="object-fallback">设计稿</span>
+            </a>
+            <div class="brain-item item-cloud" data-depth="0.68">
+              <img src="assets/cloud.webp" alt="" onerror="markMissing(this)">
+              <span class="object-fallback">Cloud</span>
+            </div>
+            <div class="brain-item item-daisy" data-depth="0.82">
+              <img src="assets/daisy.webp" alt="" onerror="markMissing(this)">
+              <span class="object-fallback">Daisy</span>
+            </div>
+            <div class="brain-item item-heart" data-depth="0.92">
+              <img src="assets/heart.webp" alt="" onerror="markMissing(this)">
+              <span class="object-fallback">Heart</span>
+            </div>
+          </div>
+
+          <div class="head-top">
+            <img class="portrait expression-layer is-active" data-expression="happy" src="assets/face-happy-fitted.webp" alt="" width="1165" height="1350" draggable="false" onerror="markPortraitMissing()">
+            <img class="portrait expression-layer" data-expression="lively" src="assets/face-lively-fitted.webp" alt="" width="1165" height="1350" draggable="false" onerror="markPortraitMissing()">
+            <img class="portrait expression-layer" data-expression="surprised" src="assets/face-surprised-fitted.webp" alt="" width="1165" height="1350" draggable="false" onerror="markPortraitMissing()">
+            <img class="portrait expression-layer" data-expression="angry" src="assets/face-angry-fitted.webp" alt="" width="1165" height="1350" draggable="false" onerror="markPortraitMissing()">
+          </div>
+
+          <div class="face-bottom" aria-hidden="true">
+            <img class="portrait expression-layer is-active" data-expression="happy" src="assets/face-happy-fitted.webp" alt="" width="1165" height="1350" draggable="false" onerror="markPortraitMissing()">
+            <img class="portrait expression-layer" data-expression="lively" src="assets/face-lively-fitted.webp" alt="" width="1165" height="1350" draggable="false" onerror="markPortraitMissing()">
+            <img class="portrait expression-layer" data-expression="surprised" src="assets/face-surprised-fitted.webp" alt="" width="1165" height="1350" draggable="false" onerror="markPortraitMissing()">
+            <img class="portrait expression-layer" data-expression="angry" src="assets/face-angry-fitted.webp" alt="" width="1165" height="1350" draggable="false" onerror="markPortraitMissing()">
+          </div>
+
+          <div class="asset-fallback">
+            <span>Place the aligned portrait set in<br><strong>assets/face-*-fitted.png</strong><br><br>Canvas size: 1165 × 1350</span>
+          </div>
+        </div>
+
+        <div class="brain-tooltip" aria-hidden="true">
+          <strong></strong>
+          <span></span>
+        </div>
+
+        <aside class="hero-intro" aria-label="个人介绍">
+          <h2>嗨，我是 <strong>OREKI.</strong></h2>
+          <p>用设计整理想法，<br>用镜头记录日常。</p>
+          <p class="intro-disciplines">UI DESIGN / WEB DESIGN / PHOTOGRAPHY</p>
+        </aside>
+
+        <div class="hero-burger" aria-hidden="true"><div class="hero-burger-art"><img src="assets/burger-sticker.webp" alt=""></div></div>
+
+        
+
+        <div class="scroll-cue" aria-hidden="true">Scroll to open</div>
+      </div>
+    </section>
+    <section class="page-continuation" id="shows" aria-labelledby="layered-text-title">
+      <div class="continuation-stickers">
+        <img class="continuation-camera" src="assets/continuation-camera.webp" alt="" draggable="false">
+        <div class="continuation-avatar" aria-hidden="true">
+          <img class="continuation-expression is-active" src="assets/face-happy.webp" alt="" draggable="false">
+          <img class="continuation-expression" src="assets/face-angry-fitted.webp" alt="" draggable="false">
+          <img class="continuation-expression" src="assets/face-surprised.webp" alt="" draggable="false">
+        </div>
+      </div>
+      <h2 id="layered-text-title" class="sr-only">在寻常的日常里发现不凡，用独立与思考构建属于自己的世界</h2>
+      <div class="layered-text" tabindex="0" aria-label="悬停或聚焦以移动分层文字">
+        <span class="sr-only">在寻常的日常里，发现不凡，用独立与思考，构建属于自己的世界</span>
+        <ul aria-hidden="true">
+          <li style="--line-x: -3"><p>&nbsp;</p><p>在寻常的日常里</p></li>
+          <li style="--line-x: -2"><p>在寻常的日常里</p><p>发现<span class="word-accent">不凡</span></p></li>
+          <li style="--line-x: -1"><p>发现<span class="word-accent">不凡</span></p><p>用独立与思考</p></li>
+          <li style="--line-x: 0"><p>用独立与思考</p><p>构建属于</p></li>
+          <li style="--line-x: 1"><p>构建属于</p><p>自己的</p></li>
+          <li style="--line-x: 2"><p>自己的</p><p>世界</p></li>
+          <li style="--line-x: 3"><p>世界</p><p>&nbsp;</p></li>
+        </ul>
+      </div>
+    </section>
+
+    <section class="paper-transition" id="paper-reveal" aria-labelledby="paper-about-title">
+      <div class="paper-blue-gap" aria-hidden="true"></div>
+      <div class="paper-band-zone">
+        <div class="paper-black-fill" aria-hidden="true"></div>
+        <img class="torn-band" src="assets/torn-band-new.webp" alt="" draggable="false">
+      </div>
+      <div class="paper-black-gap" aria-hidden="true"></div>
+      <div class="paper-bottom-layer" id="about">
+        <div class="about-story-stage">
+          <div class="about-intro">
+            <h2 id="paper-about-title">关于<br><span>这家伙</span></h2>
+          </div>
+          <div class="about-portrait-cluster" aria-hidden="true">
+            <img class="about-orbit about-heart" src="assets/heart.webp" alt="" draggable="false">
+            <div class="about-face-stack">
+              <img class="about-portrait is-active" src="assets/face-happy.webp" alt="" draggable="false">
+            </div>
+            <span class="about-note">下一步？</span>
+            <img class="about-orbit about-cloud" src="assets/cloud.webp" alt="" draggable="false">
+          </div>
+          <p class="about-manifesto">一个好奇的<span>人类</span><br>对周围的世界<br>充满好奇</p>
+          <div class="about-hobbies" aria-label="音乐、游戏与个人档案">
+            <img class="about-hobby-image about-record-player" src="assets/about-record-player.webp" alt="复古唱片机贴图" draggable="false">
+            <div class="about-details">
+              <p class="about-name">OREKI / 个人档案</p>
+              <p class="about-copy">把寻常的日常认真记录下来，在独立与思考里慢慢构建属于自己的世界。<span class="about-copy-accent">摄影、设计</span>，以及那些突然冒出来的好奇心，都是我理解生活的入口。沉浸在<span class="about-copy-accent">音乐的律动与游戏的天地</span>里，这些碎片共同拼凑出最真实、丰盈的我。</p>
+            </div>
+            <img class="about-hobby-image about-game-console" src="assets/about-game-console.webp" alt="掌上游戏机贴图" draggable="false">
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="marquee-section" id="watch" aria-labelledby="marquee-title">
+      <h2 class="sr-only" id="marquee-title">双向滚动作品画廊</h2>
+      <div class="marquee-viewport">
+        <div class="marquee-row" data-direction="right">
+          <div class="marquee-track">
+            <div class="marquee-set">
+              <figure class="marquee-card is-contain"><img src="assets/gallery/photo-01-1600.webp" alt="SUMMER DRIFT 漂流活动合影"></figure>
+              <figure class="marquee-card is-contain"><img src="assets/gallery/photo-02-1600.webp" alt="TABLE FOR FIVE 餐桌朋友合影"></figure>
+              <figure class="marquee-card is-contain"><img src="assets/gallery/photo-03-1600.webp" alt="STREET MIRROR 街头镜面自拍"></figure>
+              <figure class="marquee-card is-contain"><img src="assets/gallery/photo-04-1600.webp" alt="BLUE STAGE 音乐现场蓝色舞台"></figure>
+              <figure class="marquee-card is-contain"><img src="assets/gallery/photo-05-1600.webp" alt="FLOWER IN A GLASS 雏菊饮品特写"></figure>
+              <figure class="marquee-card is-contain"><img src="assets/gallery/photo-06-1600.webp" alt="FOUR FRAMES 朋友手持拍立得合影"></figure>
+              <figure class="marquee-card is-contain"><img src="assets/gallery/photo-07-1600.webp" alt="MOVING SUNSET 黄昏行车窗外风景"></figure>
+              <figure class="marquee-card is-contain"><img src="assets/gallery/photo-08-1600.webp" alt="FIRST MEETING 心形留言布景"></figure>
+            </div>
+          </div>
+        </div>
+        <div class="marquee-row" data-direction="left">
+          <div class="marquee-track">
+            <div class="marquee-set">
+              <figure class="marquee-card is-contain"><img src="assets/gallery/photo-09-1600.webp" alt="RED NIGHT 夜间音乐节红色烟雾"></figure>
+              <figure class="marquee-card is-contain"><img src="assets/gallery/photo-10-1600.webp" alt="CITY SUNSET 城市街道日落"></figure>
+              <figure class="marquee-card is-contain"><img src="assets/gallery/photo-11-1600.webp" alt="BLUE HORIZON 海湾蓝天风景"></figure>
+              <figure class="marquee-card is-contain"><img src="assets/gallery/photo-12-1600.webp" alt="LATE DINNER 拉面餐食特写"></figure>
+              <figure class="marquee-card is-contain"><img src="assets/gallery/photo-13-1600.webp" alt="GREY COAST 阴天下的海湾"></figure>
+              <figure class="marquee-card is-contain"><img src="assets/gallery/photo-14-1600.webp" alt="MIDNIGHT SNACK 手持粽子与点赞手势"></figure>
+              <figure class="marquee-card is-contain"><img src="assets/gallery/photo-15-1600.webp" alt="ROOM MEMORY 房间朋友合影"></figure>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="projects-stack" id="books" aria-labelledby="projects-title">
+      <div class="projects-intro">
+        <h2 class="projects-heading" id="projects-title">SELECTED PROJECTS</h2>
+        <a class="projects-portfolio-link" data-scene-link href="portfolio.html">查看完整作品集 ↗</a>
+      </div>
+
+      <div class="project-shell" style="--card-index:0">
+        <article class="project-card project-card--scene">
+          <header class="project-card-header">
+            <span class="project-number">01</span>
+            <span class="project-category">网站设计</span>
+            <h3 class="project-name">Scene Shot</h3>
+          </header>
+          <div class="project-scene-grid" aria-label="Scene Shot 三张作品预览">
+            <figure class="project-image project-image--hero">
+              <img src="assets/scene-shot-overview.webp" alt="Scene Shot 影片墙与层叠的电影海报" loading="lazy">
+              <figcaption>影片墙 · 整体画面</figcaption>
+            </figure>
+            <figure class="project-image">
+              <img src="assets/scene-shot-collage.webp" alt="Scene Shot 的角色照片拼贴与文字界面" loading="lazy">
+              <figcaption>角色 · 拼贴细节</figcaption>
+            </figure>
+            <figure class="project-image">
+              <img src="assets/scene-shot-detail.webp" alt="Scene Shot 项目中三位角色的影像画面" loading="lazy">
+              <figcaption>影像 · 瞬间</figcaption>
+            </figure>
+          </div>
+        </article>
+      </div>
+
+      <div class="project-shell" style="--card-index:1">
+        <article class="project-card">
+          <header class="project-card-header">
+            <span class="project-number">02</span>
+            <span class="project-category" style="text-transform:none">Terra Wander 的 UI 设计</span>
+            <h3 class="project-name">Terra Wander</h3>
+          </header>
+          <div class="project-phone-stage" aria-label="Terra Wander 旅行应用的三个手机界面">
+            <figure class="project-phone project-phone--discover">
+              <img src="assets/terra-wander-discover.webp" alt="Terra Wander 探索目的地界面" loading="lazy">
+            </figure>
+            <figure class="project-phone project-phone--home">
+              <img src="assets/terra-wander-home.webp" alt="Terra Wander 首页推荐界面" loading="lazy">
+            </figure>
+            <figure class="project-phone project-phone--itinerary">
+              <img src="assets/terra-wander-itinerary.webp" alt="Terra Wander 东京与京都行程界面" loading="lazy">
+            </figure>
+          </div>
+        </article>
+      </div>
+
+      <div class="project-shell" style="--card-index:2">
+        <article class="project-card">
+          <header class="project-card-header">
+            <span class="project-number">03</span>
+            <span class="project-category">宠物社会的 UI 设计</span>
+            <h3 class="project-name">宠物社会</h3>
+          </header>
+          <div class="project-phone-stage project-phone-stage--pet" aria-label="宠物社会应用的三个手机界面">
+            <figure class="project-phone project-phone--social">
+              <img src="assets/pet-social.webp" alt="宠物应用的社交动态界面" loading="lazy">
+            </figure>
+            <figure class="project-phone project-phone--home">
+              <img src="assets/pet-home.webp" alt="宠物应用的首页界面" loading="lazy">
+            </figure>
+            <figure class="project-phone project-phone--map">
+              <img src="assets/pet-map.webp" alt="宠物应用的散步地图界面" loading="lazy">
+            </figure>
+          </div>
+        </article>
+      </div>
+
+      <div class="project-finish" aria-hidden="true">OREKI<br>WORLD</div>
+    </section>
+  </main>
+
+  <div class="scene-transition" aria-hidden="true"></div>
+  <a class="home-wordmark" href="#home" aria-label="返回首页">OREKI</a>
+
+  <div class="top-actions">
+    <button class="round-button menu-toggle" type="button" aria-label="打开菜单" aria-expanded="false" aria-controls="menu-panel">
+      <span class="menu-glyph" aria-hidden="true"></span>
+    </button>
+  </div>
+
+  <div class="menu-panel" id="menu-panel" aria-hidden="true">
+    <nav aria-label="Main menu">
+      <a href="#home">HomePage</a>
+      <a href="design.html" data-scene-link>Photograph</a>
+      <a href="portfolio.html" data-scene-link>Portfolio</a>
+    </nav>
+  </div>
+
+  <script src="assets/vendor/gsap.min.js"></script>
+  <script src="assets/vendor/ScrollTrigger.min.js"></script>
+  <script>
+    // Graceful local-asset fallbacks. These keep the layout inspectable before
+    // you add final artwork, while the production path still uses local files.
+    function markPortraitMissing() {
+      document.querySelector('.avatar-wrap')?.classList.add('is-missing');
+    }
+    function markMissing(image) {
+      image.closest('.brain-item')?.classList.add('is-missing');
+    }
+    function markThumbnailMissing(image) {
+      image.closest('.latest-thumb')?.classList.add('is-missing');
+    }
+
+    // Inline onerror handlers can fire before this bottom script is parsed when
+    // the page is opened from disk. Reconcile every failed asset once more here.
+    document.querySelectorAll('.portrait').forEach((image) => {
+      if (image.complete && image.naturalWidth === 0) markPortraitMissing();
+    });
+    document.querySelectorAll('.brain-item img').forEach((image) => {
+      if (image.complete && image.naturalWidth === 0) markMissing(image);
+    });
+    document.querySelectorAll('.latest-thumb img').forEach((image) => {
+      if (image.complete && image.naturalWidth === 0) markThumbnailMissing(image);
+    });
+
+    (() => {
+      const stage = document.querySelector('.hero-stage');
+      const heroScroll = document.querySelector('.hero-scroll');
+      const heroWordmark = document.querySelector('.wordmark');
+      const homeWordmark = document.querySelector('.home-wordmark');
+      const avatar = document.querySelector('.avatar-wrap');
+      const menuButton = document.querySelector('.menu-toggle');
+      const menuPanel = document.querySelector('.menu-panel');
+      const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)');
+      const expressionLayers = [...document.querySelectorAll('.expression-layer')];
+      const expressionSets = [...expressionLayers.reduce((sets, layer) => {
+        const name = layer.dataset.expression;
+        if (!sets.has(name)) sets.set(name, []);
+        sets.get(name).push(layer);
+        return sets;
+      }, new Map()).values()].filter((layers) => layers.length === 2);
+
+      // Ambient drift uses translate separately from the scroll exit transform.
+      const burgerSticker = document.querySelector('.hero-burger');
+      let burgerDrift;
+      let burgerPosition = '0px 0px';
+      function driftBurger() {
+        if (!burgerSticker || reduceMotion.matches) return;
+        const next = `${(Math.random() * 16 - 8).toFixed(2)}px ${(Math.random() * 20 - 10).toFixed(2)}px`;
+        const previousDrift = burgerDrift;
+        burgerDrift = burgerSticker.animate(
+          [{translate:burgerPosition}, {translate:next}],
+          {duration:2600 + Math.random()*1400, easing:'ease-in-out', fill:'forwards'}
+        );
+        previousDrift?.cancel();
+        burgerPosition = next;
+        burgerDrift.onfinish = driftBurger;
+        if(document.hidden || !document.body.classList.contains('brain-float-active')) burgerDrift.pause();
+      }
+      driftBurger();
+      function syncBurgerDrift() {
+        if(reduceMotion.matches){burgerDrift?.cancel();burgerDrift=null;burgerPosition='0px 0px';return;}
+        if(!burgerDrift) driftBurger();
+        if(document.body.classList.contains('brain-float-active')) burgerDrift?.play();
+        else burgerDrift?.pause();
+      }
+
+      // RANDOM EXPRESSIONS
+      // Each expression owns a synchronized upper-head + lower-face pair. Both
+      // clipped halves jump-cut in the same frame, so no blended intermediate
+      // face appears and the tear always comes from one complete portrait.
+      let currentExpression = 0;
+      let expressionTimer = 0;
+      let avatarIsVisible = true;
+
+      const randomExpressionDelay = () => 2200 + Math.random() * 2600;
+      const scheduleExpression = () => {
+        window.clearTimeout(expressionTimer);
+        if (reduceMotion.matches || document.hidden || !avatarIsVisible || expressionSets.length < 2) return;
+        expressionTimer = window.setTimeout(playNextExpression, randomExpressionDelay());
+      };
+      const playNextExpression = () => {
+        const candidates = expressionSets
+          .map((_, index) => index)
+          .filter((index) => index !== currentExpression);
+        const nextExpression = candidates[Math.floor(Math.random() * candidates.length)];
+        const currentLayers = expressionSets[currentExpression];
+        const nextLayers = expressionSets[nextExpression];
+
+        nextLayers.forEach((layer) => layer.classList.add('is-active'));
+        currentLayers.forEach((layer) => layer.classList.remove('is-active'));
+        currentExpression = nextExpression;
+        scheduleExpression();
+      };
+
+      const syncAmbientMotion = () => {
+        document.body.classList.toggle(
+          'brain-float-active',
+          avatarIsVisible && !document.hidden && !reduceMotion.matches
+        );
+        syncBurgerDrift();
+      };
+
+      const expressionObserver = 'IntersectionObserver' in window
+        ? new IntersectionObserver(([entry]) => {
+            avatarIsVisible = entry.isIntersecting;
+            syncAmbientMotion();
+            scheduleExpression();
+          }, { threshold: .05 })
+        : null;
+      expressionObserver?.observe(avatar);
+      document.addEventListener('visibilitychange', () => {
+        syncAmbientMotion();
+        scheduleExpression();
+      });
+      reduceMotion.addEventListener?.('change', () => {
+        syncAmbientMotion();
+        scheduleExpression();
+      });
+      Promise.all(expressionLayers.map((image) => image.decode?.().catch(() => undefined)))
+        .then(() => {
+          syncAmbientMotion();
+          scheduleExpression();
+        });
+
+      // SECOND-SCREEN FACE STICKER
+      // Every expression stays mounted and decoded. Switching changes only
+      // opacity in one synchronous DOM update, never the active image source.
+      const continuationAvatar = document.querySelector('.continuation-avatar');
+      const continuationExpressions = continuationAvatar
+        ? [...continuationAvatar.querySelectorAll('.continuation-expression')]
+        : [];
+      const continuationExpressionSources = [
+        'assets/face-happy.webp',
+        'assets/face-angry-fitted.webp',
+        'assets/face-surprised.webp'
+      ];
+      let continuationExpressionIndex = 0;
+      let continuationExpressionTimer = 0;
+      let continuationAvatarIsVisible = !('IntersectionObserver' in window);
+      let continuationExpressionsReady = false;
+
+      const setContinuationExpression = (index) => {
+        continuationExpressions.forEach((image, imageIndex) => {
+          image.classList.toggle('is-active', imageIndex === index);
+        });
+      };
+
+      const syncContinuationMotion = () => {
+        document.body.classList.toggle(
+          'continuation-float-active',
+          continuationAvatarIsVisible && !document.hidden && !reduceMotion.matches
+        );
+      };
+
+      const scheduleContinuationExpression = () => {
+        window.clearTimeout(continuationExpressionTimer);
+        if (
+          reduceMotion.matches ||
+          document.hidden ||
+          !continuationAvatarIsVisible ||
+          !continuationExpressionsReady ||
+          continuationExpressions.length < 2
+        ) return;
+        continuationExpressionTimer = window.setTimeout(
+          showNextContinuationExpression,
+          2400 + Math.random() * 2200
+        );
+      };
+      const showNextContinuationExpression = () => {
+        const choices = continuationExpressions
+          .map((_, index) => index)
+          .filter((index) => index !== continuationExpressionIndex);
+        const nextIndex = choices[Math.floor(Math.random() * choices.length)];
+        setContinuationExpression(nextIndex);
+        continuationExpressionIndex = nextIndex;
+        scheduleContinuationExpression();
+      };
+
+      const continuationExpressionObserver = continuationAvatar && 'IntersectionObserver' in window
+        ? new IntersectionObserver(([entry]) => {
+            continuationAvatarIsVisible = entry.isIntersecting;
+            syncContinuationMotion();
+            scheduleContinuationExpression();
+          }, { threshold: .2 })
+        : null;
+      continuationExpressionObserver?.observe(continuationAvatar);
+      setContinuationExpression(continuationExpressionIndex);
+      document.addEventListener('visibilitychange', () => {
+        syncContinuationMotion();
+        scheduleContinuationExpression();
+      });
+      reduceMotion.addEventListener?.('change', () => {
+        syncContinuationMotion();
+        scheduleContinuationExpression();
+      });
+      const continuationExpressionPreloads = continuationExpressionSources.map((source) => {
+        const preload = new Image();
+        preload.decoding = 'sync';
+        preload.src = source;
+        return preload.decode?.().catch(() => undefined) || Promise.resolve();
+      });
+      Promise.all([
+        ...continuationExpressionPreloads,
+        ...continuationExpressions.map((image) => image.decode?.().catch(() => undefined) || Promise.resolve())
+      ])
+        .then(() => {
+          continuationExpressionsReady = true;
+          setContinuationExpression(continuationExpressionIndex);
+          syncContinuationMotion();
+          scheduleContinuationExpression();
+        });
+
+      // ABOUT PORTRAIT — fixed happy expression with independent ambient drift.
+      const aboutFaceStack = document.querySelector('.about-face-stack');
+      let aboutPortraitIsVisible = !('IntersectionObserver' in window);
+
+      // Working menu control, including Escape and correct ARIA state.
+      const setMenu = (open) => {
+        document.body.classList.toggle('menu-open', open);
+        menuButton.setAttribute('aria-expanded', String(open));
+        menuPanel.setAttribute('aria-hidden', String(!open));
+        if (open) menuPanel.querySelector('a')?.focus({ preventScroll: true });
+        else menuButton.focus({ preventScroll: true });
+      };
+      menuButton.addEventListener('click', () => setMenu(!document.body.classList.contains('menu-open')));
+      document.addEventListener('keydown', (event) => {
+        if (event.key === 'Escape' && document.body.classList.contains('menu-open')) setMenu(false);
+        if (event.key === 'Tab' && document.body.classList.contains('menu-open')) {
+          const focusable = [...menuPanel.querySelectorAll('a'), menuButton];
+          const first = focusable[0];
+          const last = focusable[focusable.length - 1];
+          if (event.shiftKey && document.activeElement === first) {
+            event.preventDefault();
+            last.focus();
+          } else if (!event.shiftKey && document.activeElement === last) {
+            event.preventDefault();
+            first.focus();
+          }
+        }
+      });
+      menuPanel.addEventListener('click', (event) => {
+        if (event.target.closest('a')) setMenu(false);
+      });
+
+      // Keep the compact home link visible everywhere after the opening hero.
+      // This is independent of ScrollTrigger so it cannot disappear at the
+      // document's maximum scroll position or when motion scripts are absent.
+      let homeWordmarkFrame = 0;
+      const syncHomeWordmark = () => {
+        homeWordmarkFrame = 0;
+        if (!homeWordmark || !heroWordmark || !heroScroll) return;
+        const wordmarkBottom = heroWordmark.offsetTop + heroWordmark.offsetHeight;
+        const revealAt = reduceMotion.matches
+          ? heroScroll.offsetTop + wordmarkBottom
+          : heroScroll.offsetTop + window.innerHeight * .4 + wordmarkBottom / 1.2;
+        homeWordmark.classList.toggle('is-visible', window.scrollY >= revealAt);
+      };
+      const requestHomeWordmarkSync = () => {
+        if (!homeWordmarkFrame) homeWordmarkFrame = requestAnimationFrame(syncHomeWordmark);
+      };
+      window.addEventListener('scroll', requestHomeWordmarkSync, { passive: true });
+      window.addEventListener('resize', requestHomeWordmarkSync, { passive: true });
+      reduceMotion.addEventListener?.('change', requestHomeWordmarkSync);
+      requestHomeWordmarkSync();
+
+      homeWordmark?.addEventListener('click', (event) => {
+        event.preventDefault();
+        window.scrollTo({
+          top: 0,
+          behavior: reduceMotion.matches ? 'auto' : 'smooth'
+        });
+      });
+
+      // BIDIRECTIONAL MARQUEE + STICKY PROJECT STACK
+      // Gallery rows move in opposite directions while successive project
+      // cards compress underneath the next sticky card.
+      const marqueeSection = document.querySelector('.marquee-section');
+      const marqueeTracks = [...document.querySelectorAll('.marquee-track')];
+      const projectsStack = document.querySelector('.projects-stack');
+      const projectCards = [...document.querySelectorAll('.project-card')];
+      const projectShellStarts = projectCards.map((card) => card.closest('.project-shell')?.offsetTop || 0);
+      let showcaseFrame = 0;
+
+      marqueeTracks.forEach((track) => {
+        const originalSet = track.querySelector('.marquee-set');
+        if (!originalSet || track.children.length > 1) return;
+        for (let copy = 0; copy < 2; copy += 1) {
+          const clone = originalSet.cloneNode(true);
+          clone.setAttribute('aria-hidden', 'true');
+          clone.querySelectorAll('img').forEach((image) => { image.alt = ''; });
+          track.appendChild(clone);
+        }
+      });
+
+      const syncShowcaseMotion = () => {
+        showcaseFrame = 0;
+        const stackBounds = projectsStack?.getBoundingClientRect();
+        document.body.classList.toggle('projects-in-view', !!stackBounds && stackBounds.top < window.innerHeight && stackBounds.bottom > 0);
+        if (reduceMotion.matches) {
+          marqueeTracks.forEach((track) => { track.style.transform = 'translate3d(0, 0, 0)'; });
+          projectCards.forEach((card) => { card.style.transform = 'scale(1)'; });
+          return;
+        }
+
+        if (marqueeSection) {
+          const offset = (window.scrollY - marqueeSection.offsetTop + window.innerHeight) * .3;
+          marqueeTracks.forEach((track, index) => {
+            const x = index === 0 ? offset - 200 : -(offset - 200);
+            track.style.transform = `translate3d(${x}px, 0, 0)`;
+          });
+        }
+
+        projectCards.forEach((card, index) => {
+          const shell = card.closest('.project-shell');
+          if (!shell) return;
+          const start = (projectsStack?.offsetTop || 0) + projectShellStarts[index] - window.innerHeight * .2;
+          const distance = Math.max(shell.offsetHeight * .86, 1);
+          const progress = Math.max(0, Math.min(1, (window.scrollY - start) / distance));
+          const shrink = (projectCards.length - 1 - index) * .03;
+          card.style.transform = `scale(${1 - progress * shrink})`;
+        });
+      };
+
+      const requestShowcaseSync = () => {
+        if (!showcaseFrame) showcaseFrame = requestAnimationFrame(syncShowcaseMotion);
+      };
+      window.addEventListener('scroll', requestShowcaseSync, { passive: true });
+      window.addEventListener('resize', requestShowcaseSync, { passive: true });
+      reduceMotion.addEventListener?.('change', requestShowcaseSync);
+      requestShowcaseSync();
+
+      if (!window.gsap || !window.ScrollTrigger) {
+        document.querySelectorAll('.brain-item').forEach(item => {
+          item.style.opacity = '1';
+          item.style.visibility = 'visible';
+        });
+        return;
+      }
+
+      gsap.registerPlugin(ScrollTrigger);
+      const mm = gsap.matchMedia();
+
+      // The about portrait and its small orbiting stickers drift on independent
+      // rhythms, and pause whenever the section or browser tab is not visible.
+      mm.add('(prefers-reduced-motion: no-preference)', () => {
+        const aboutFloatTargets = [
+          { element: aboutFaceStack, vars: { y: -12, rotation: .7, duration: 4.8 } },
+          { element: document.querySelector('.about-heart'), vars: { x: 7, y: -16, rotation: -4, duration: 3.9 } },
+          { element: document.querySelector('.about-cloud'), vars: { x: -8, y: 13, rotation: 2, duration: 5.2 } },
+          { element: document.querySelector('.about-note'), vars: { x: 6, y: -11, rotation: 1, duration: 3.4 } }
+        ].filter(({ element }) => element);
+        const aboutFloatTweens = aboutFloatTargets.map(({ element, vars }) => gsap.to(element, {
+          ...vars,
+          repeat: -1,
+          yoyo: true,
+          ease: 'sine.inOut',
+          paused: true
+        }));
+        const syncAboutFloat = () => {
+          const shouldPlay = aboutPortraitIsVisible && !document.hidden;
+          aboutFloatTweens.forEach((tween) => shouldPlay ? tween.play() : tween.pause());
+        };
+        const aboutFloatObserver = aboutFaceStack && 'IntersectionObserver' in window
+            ? new IntersectionObserver(([entry]) => {
+              aboutPortraitIsVisible = entry.isIntersecting;
+              syncAboutFloat();
+            }, { threshold: .18 })
+          : null;
+        aboutFloatObserver?.observe(aboutFaceStack);
+        document.addEventListener('visibilitychange', syncAboutFloat);
+        syncAboutFloat();
+
+        return () => {
+          aboutFloatObserver?.disconnect();
+          document.removeEventListener('visibilitychange', syncAboutFloat);
+        };
+      });
+
+      // Keep hobby motion independent of the portrait's visibility and responsive placement.
+      mm.add('(prefers-reduced-motion: no-preference)', () => {
+        const hobbies = document.querySelector('.about-hobbies');
+        if (!hobbies) return;
+        const hobbyTweens = [
+          gsap.to('.about-record-player', {
+            '--hobby-drift-y': '-22px', '--hobby-drift-angle': '2.6deg',
+            duration: 4.6, repeat: -1, yoyo: true, ease: 'sine.inOut', paused: true
+          }),
+          gsap.to('.about-game-console', {
+            '--hobby-drift-y': '20px', '--hobby-drift-angle': '-2.8deg',
+            duration: 5.7, repeat: -1, yoyo: true, ease: 'sine.inOut', paused: true
+          })
+        ];
+        let hobbiesVisible = true;
+        const syncHobbyFloat = () => {
+          hobbyTweens.forEach(tween => hobbiesVisible && !document.hidden ? tween.play() : tween.pause());
+        };
+        const observer = 'IntersectionObserver' in window ? new IntersectionObserver(([entry]) => {
+          hobbiesVisible = entry.isIntersecting;
+          syncHobbyFloat();
+        }, { threshold: 0 }) : null;
+        observer?.observe(hobbies);
+        document.addEventListener('visibilitychange', syncHobbyFloat);
+        syncHobbyFloat();
+        return () => {
+          observer?.disconnect();
+          document.removeEventListener('visibilitychange', syncHobbyFloat);
+        };
+      });
+
+      // LAYERED TEXT
+      // Native HTML equivalent of the supplied React component. One paused
+      // timeline owns every slice so hover and keyboard focus reverse cleanly.
+      const layeredText = document.querySelector('.layered-text');
+      const layeredParagraphs = layeredText ? [...layeredText.querySelectorAll('p')] : [];
+      const getLayeredTextShift = () => {
+        // offsetHeight is the untransformed layout height. A visual bounding box
+        // is distorted by the parent skew/scale and would push both lines away.
+        return -(layeredParagraphs[0]?.offsetHeight || 0);
+      };
+      const layeredTimeline = layeredText
+        ? gsap.timeline({ paused: true, defaults: { ease: 'power2.out' } })
+            .set(layeredParagraphs, { y: 0, yPercent: 0, transformOrigin: '50% 50%' })
+            .to(layeredParagraphs, {
+              // Each clipped row reveals its paired next line at exactly its
+              // own height, preserving the supplied layered-text interaction.
+              y: getLayeredTextShift,
+              yPercent: 0,
+              duration: reduceMotion.matches ? 0 : .8,
+              stagger: reduceMotion.matches ? 0 : .08,
+              force3D: false
+            })
+        : null;
+
+      layeredText?.addEventListener('pointerenter', () => layeredTimeline?.play());
+      layeredText?.addEventListener('pointerleave', () => layeredTimeline?.reverse());
+      layeredText?.addEventListener('focus', () => layeredTimeline?.play());
+      layeredText?.addEventListener('blur', () => layeredTimeline?.reverse());
+
+      // CAMERA + DESIGN RESPONSES
+      // Scale the artwork inside each scroll-driven item so hover feedback never
+      // competes with the timeline that owns the item's outer transform.
+      const tooltip = document.querySelector('.brain-tooltip');
+      const tooltipTitle = tooltip.querySelector('strong');
+      const tooltipCopy = tooltip.querySelector('span');
+      const responseItems = [...document.querySelectorAll('.item-camera, .item-book')];
+      const tooltipX = gsap.quickTo(tooltip, 'x', { duration: .16, ease: 'power3.out' });
+      const tooltipY = gsap.quickTo(tooltip, 'y', { duration: .16, ease: 'power3.out' });
+
+      const placeTooltip = (clientX, clientY) => {
+        const bounds = tooltip.getBoundingClientRect();
+        const x = Math.max(12, Math.min(window.innerWidth - bounds.width - 12, clientX + 18));
+        const y = Math.max(12, Math.min(window.innerHeight - bounds.height - 12, clientY + 18));
+        tooltipX(x);
+        tooltipY(y);
+      };
+
+      const showResponse = (item, clientX, clientY) => {
+        const artwork = item.classList.contains('is-missing')
+          ? item.querySelector('.object-fallback')
+          : item.querySelector('img');
+        const baseScale = Number(item.dataset.baseScale || 1);
+        tooltipTitle.textContent = item.dataset.hoverTitle;
+        tooltipCopy.textContent = item.dataset.hoverCopy;
+        tooltip.setAttribute('aria-hidden', 'false');
+        placeTooltip(clientX, clientY);
+        gsap.to(artwork, {
+          scale: baseScale * 1.1,
+          duration: reduceMotion.matches ? 0 : .22,
+          ease: 'power3.out',
+          overwrite: 'auto'
+        });
+        gsap.to(tooltip, {
+          autoAlpha: 1,
+          scale: 1,
+          duration: reduceMotion.matches ? 0 : .18,
+          ease: 'power3.out',
+          overwrite: 'auto'
+        });
+      };
+
+      const hideResponse = (item) => {
+        const artwork = item.classList.contains('is-missing')
+          ? item.querySelector('.object-fallback')
+          : item.querySelector('img');
+        gsap.to(artwork, {
+          scale: Number(item.dataset.baseScale || 1),
+          duration: reduceMotion.matches ? 0 : .16,
+          ease: 'power2.out',
+          overwrite: 'auto'
+        });
+        gsap.to(tooltip, {
+          autoAlpha: 0,
+          scale: .94,
+          duration: reduceMotion.matches ? 0 : .12,
+          ease: 'power2.out',
+          overwrite: 'auto',
+          onComplete: () => tooltip.setAttribute('aria-hidden', 'true')
+        });
+      };
+
+      responseItems.forEach((item) => {
+        item.addEventListener('pointerenter', (event) => showResponse(item, event.clientX, event.clientY));
+        item.addEventListener('pointermove', (event) => placeTooltip(event.clientX, event.clientY));
+        item.addEventListener('pointerleave', () => {
+          if (document.activeElement !== item) hideResponse(item);
+        });
+        item.addEventListener('focus', () => {
+          const bounds = item.getBoundingClientRect();
+          showResponse(item, bounds.right, bounds.top + bounds.height * .35);
+        });
+        item.addEventListener('blur', () => hideResponse(item));
+      });
+
+      // POINTER PARALLAX
+      const burgerArt = document.querySelector('.hero-burger-art');
+      const burgerX = burgerArt ? gsap.quickTo(burgerArt, 'x', { duration: 1, ease: 'power3.out' }) : null;
+      const burgerY = burgerArt ? gsap.quickTo(burgerArt, 'y', { duration: 1, ease: 'power3.out' }) : null;
+      const cornerDaisyArt = document.querySelector('.corner-daisy img');
+      const cornerDaisyX = cornerDaisyArt ? gsap.quickTo(cornerDaisyArt, 'x', { duration: 1, ease: 'power3.out' }) : null;
+      const cornerDaisyY = cornerDaisyArt ? gsap.quickTo(cornerDaisyArt, 'y', { duration: 1, ease: 'power3.out' }) : null;
+      const itemControllers = [...document.querySelectorAll('.brain-item')].map((item) => ({
+        item,
+        depth: Number(item.dataset.depth || 1),
+        xTo: gsap.quickTo(item, 'x', { duration: .8, ease: 'power3.out' }),
+        yTo: gsap.quickTo(item, 'y', { duration: .8, ease: 'power3.out' })
+      }));
+
+      const onPointerMove = (event) => {
+        const nx = event.clientX / window.innerWidth - .5;
+        const ny = event.clientY / window.innerHeight - .5;
+        if (reduceMotion.matches) return;
+        cornerDaisyX?.(nx * 10);
+        cornerDaisyY?.(ny * 8);
+        burgerX?.(nx * 10);
+        burgerY?.(ny * 8);
+        itemControllers.forEach(({ depth, xTo, yTo }) => {
+          xTo(nx * 8 * depth);
+          yTo(ny * 6 * depth);
+        });
+      };
+      window.addEventListener('pointermove', onPointerMove, { passive: true });
+
+      mm.add({
+        motion: '(prefers-reduced-motion: no-preference)',
+        desktop: '(min-width: 901px)',
+        mobile: '(max-width: 900px)'
+      }, (context) => {
+        if (!context.conditions.motion) return;
+
+        const isMobile = context.conditions.mobile;
+        const heroScale = isMobile ? 1.08 : 1.15;
+        const avatarFullClip = 'polygon(-20% -70%, 120% -70%, 120% 115%, 100% 115%, 88% 115%, 75% 115%, 62% 115%, 50% 115%, 38% 115%, 25% 115%, 12% 115%, 0 115%, -20% 115%)';
+        gsap.set('.brain-item', { autoAlpha: 0, scale: .55, y: 72 });
+        gsap.set(avatar, {
+          clipPath: avatarFullClip,
+          autoAlpha: 1,
+          yPercent: 0,
+          filter: 'drop-shadow(0 10px 20px rgba(0, 0, 0, .4))',
+          transformOrigin: '50% 50%'
+        });
+
+        const pinTrigger = ScrollTrigger.create({
+          trigger: heroScroll,
+          start: 'top top',
+          end: 'bottom bottom',
+          pin: stage,
+          pinSpacing: false,
+          invalidateOnRefresh: true
+        });
+
+        const openTl = gsap.timeline({
+          defaults: { ease: 'none' },
+          scrollTrigger: {
+            trigger: heroScroll,
+            start: 'top top',
+            end: '+=40%',
+            scrub: true,
+            invalidateOnRefresh: true,
+            onUpdate: (self) => gsap.set(avatar, {
+              '--tear-edge-opacity': self.progress > .001 ? 1 : 0
+            })
+          }
+        });
+
+        openTl
+          .to('.scroll-cue', { autoAlpha: 0, duration: .08 }, 0)
+          .to(avatar, { scale: heroScale, duration: 1 }, 0)
+          .to('.head-top', { yPercent: isMobile ? -48 : -58, rotation: isMobile ? -2 : -3.5, duration: .78 }, .05)
+          .to('.face-bottom', { yPercent: isMobile ? 3 : 5, duration: .72 }, .08)
+          .to('.brain-item', {
+            autoAlpha: 1,
+            scale: 1,
+            y: 0,
+            duration: .32,
+            stagger: { each: .045, from: 'center' },
+            ease: 'back.out(1.8)'
+          }, .13)
+          .to('.item-wind', { yPercent: -17, xPercent: 0, rotation: -11, duration: .52 }, .36)
+          .to('.item-camera', { yPercent: -10, xPercent: 0, rotation: -8, duration: .52 }, .38)
+          .to('.item-book', { yPercent: -15, xPercent: 0, rotation: 0, duration: .52 }, .38)
+          .to('.item-cloud', { yPercent: -9, xPercent: 0, rotation: -2, duration: .52 }, .4)
+          .to('.item-daisy', { yPercent: -11, xPercent: 0, rotation: 3, duration: .52 }, .4)
+          .to('.item-heart', { yPercent: -12, xPercent: 0, rotation: 7, duration: .52 }, .4);
+
+        const exitTargets = [
+          document.querySelector('.wordmark'),
+          document.querySelector('.corner-daisy'),
+          avatar,
+          document.querySelector('.hero-intro'),
+          document.querySelector('.hero-burger'),
+          document.querySelector('.socials')
+        ].filter(Boolean);
+
+        const exitTl = gsap.timeline({
+          defaults: { ease: 'none' },
+          scrollTrigger: {
+            trigger: heroScroll,
+            start: () => heroScroll.offsetTop + window.innerHeight * .4,
+            end: '+=100%',
+            scrub: true,
+            invalidateOnRefresh: true
+          }
+        });
+
+        exitTl.to(exitTargets, {
+          y: () => -window.innerHeight * 1.2,
+          force3D: true,
+          duration: 1
+        }, 0);
+
+        const layeredReveal = layeredText
+          ? gsap.fromTo(layeredText, {
+              y: () => Math.min(84, window.innerHeight * .08)
+            }, {
+              y: 0,
+              ease: 'none',
+              scrollTrigger: {
+                trigger: layeredText,
+                start: 'top bottom',
+                end: 'top 42%',
+                scrub: true,
+                invalidateOnRefresh: true
+              }
+            })
+          : null;
+
+        return () => {
+          pinTrigger.kill();
+          openTl.kill();
+          exitTl.kill();
+          layeredReveal?.kill();
+        };
+      });
+
+      window.addEventListener('load', () => ScrollTrigger.refresh(), { once: true });
+
+    })();
+  </script>
+<script src="assets/cursor-icon-trail.js" defer></script>
+<script src="assets/mobile-browser-notice.js" defer></script>
+</body>
+</html>
